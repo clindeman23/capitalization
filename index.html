@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitalization — The Press Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — zine / screenprint: black + electric yellow + white
+   ============================================================ */
+:root {
+  --ink:    #0d0d0d;
+  --paper:  #f5f2e8;
+  --yellow: #f5c800;
+  --yellow2:#c8a200;
+  --white:  #ffffff;
+  --rule:   rgba(13,13,13,.12);
+  --stamp:  rgba(13,13,13,.06);
+  --correct:#1a7f3c;
+  --wrong:  #c0392b;
+  --correct-bg: #d4edda;
+  --wrong-bg:   #f8d7da;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* subtle halftone dot texture */
+  background-image: radial-gradient(circle, rgba(13,13,13,.045) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* ============================================================ TABS */
+#tabs {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--ink);
+  display: flex; align-items: stretch; gap: 0;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 4px solid var(--yellow);
+  -webkit-overflow-scrolling: touch;
+}
+#tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: .65rem 1.1rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: .06em;
+  color: rgba(255,255,255,.55);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.tab:hover  { background: rgba(245,200,0,.15); color: var(--yellow); }
+.tab.active { background: var(--yellow); color: var(--ink); font-weight: 700; }
+
+/* ============================================================ VIEWS */
+.view { display: none; }
+.view.active { display: block; }
+.pw {
+  max-width: min(860px, 96vw);
+  margin: 0 auto;
+  padding: clamp(1.2rem, 4vw, 3rem) clamp(1rem, 5vw, 3rem) clamp(4rem, 8vw, 7rem);
+  width: 100%;
+}
+
+/* ============================================================ SECTION LABELS */
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  color: var(--ink);
+  background: var(--yellow);
+  display: inline-block;
+  padding: .12rem .55rem;
+  border-radius: 2px;
+  margin-bottom: .7rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+
+.press-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: .95;
+  color: var(--ink);
+  letter-spacing: .02em;
+  margin-bottom: 1rem;
+}
+.press-title span { color: var(--yellow2); }
+
+.pdeck {
+  font-size: 1.02rem;
+  color: rgba(13,13,13,.7);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+/* ============================================================ RULE CARDS */
+.rule-card {
+  background: var(--white);
+  border: 2.5px solid var(--ink);
+  border-radius: 0;
+  padding: 1.5rem 1.8rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.rule-card::before {
+  content: attr(data-num);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem;
+  color: var(--stamp);
+  position: absolute;
+  top: .3rem; right: .8rem;
+  line-height: 1;
+  pointer-events: none;
+}
+.rule-card.yellow-card { background: var(--yellow); border-color: var(--ink); box-shadow: 5px 5px 0 var(--ink); }
+.rule-card.yellow-card::before { color: rgba(13,13,13,.1); }
+.rule-card.ink-card { background: var(--ink); border-color: var(--ink); box-shadow: 5px 5px 0 var(--yellow2); color: var(--paper); }
+.rule-card.ink-card::before { color: rgba(255,255,255,.06); }
+
+.rule-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: .04em;
+  color: var(--ink);
+  margin-bottom: .65rem;
+  line-height: 1.1;
+}
+.rule-card.ink-card .rule-title { color: var(--yellow); }
+.rule-body { font-size: .95rem; line-height: 1.7; color: inherit; }
+.rule-body strong { font-weight: 700; }
+
+/* EXCEPTION / NOTE BOX */
+.exception {
+  border-left: 4px solid var(--yellow2);
+  background: rgba(245,200,0,.1);
+  padding: .75rem 1rem;
+  margin: .9rem 0;
+  font-size: .9rem;
+  line-height: 1.6;
+}
+.exception strong { color: var(--yellow2); font-family: 'DM Mono', monospace; font-size: .82rem; letter-spacing: .04em; }
+.rule-card.ink-card .exception { border-left-color: var(--yellow); background: rgba(245,200,0,.08); }
+
+/* EXAMPLES */
+.ex-block {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  padding: .8rem 1.1rem;
+  margin: .9rem 0;
+  font-size: .92rem;
+}
+.rule-card.ink-card .ex-block { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.2); }
+.ex-block .ex-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .68rem;
+  color: var(--yellow2);
+  font-weight: 500;
+  letter-spacing: .06em;
+  margin-bottom: .35rem;
+}
+.rule-card.ink-card .ex-block .ex-label { color: var(--yellow); }
+.ex-block p, .ex-block ul { color: inherit; font-size: .92rem; line-height: 1.65; }
+.ex-block ul { list-style: none; }
+.ex-block ul li::before { content: '→ '; font-weight: 700; color: var(--yellow2); }
+.rule-card.ink-card .ex-block ul li::before { color: var(--yellow); }
+
+/* HI CAPS */
+.hi-cap {
+  display: inline-block;
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 700;
+  padding: 0 3px;
+  border-radius: 2px;
+  font-family: 'DM Mono', monospace;
+  font-size: .88em;
+}
+.rule-card.ink-card .hi-cap { background: var(--yellow); color: var(--ink); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: .9rem 0; }
+.mini-card {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: .9rem 1rem;
+}
+.mini-card h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: .04em;
+  margin-bottom: .4rem;
+  color: var(--ink);
+}
+.mini-card ul { list-style: none; font-size: .87rem; line-height: 1.7; color: var(--ink); }
+.mini-card ul li::before { content: '▪ '; color: var(--yellow2); }
+
+/* HOME UNIT GRID */
+.unit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: .9rem; margin-bottom: 2rem; }
+.uc {
+  background: var(--white);
+  border: 2.5px solid var(--ink);
+  padding: 1.2rem 1rem 1rem;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 4px 4px 0 var(--ink);
+  position: relative;
+}
+.uc:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+.uc:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.uc-accent { height: 6px; background: var(--yellow); margin-bottom: .75rem; }
+.uc-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; line-height: 1; color: var(--ink); opacity: .15; }
+.uc-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: .04em; color: var(--ink); margin: .1rem 0 .2rem; }
+.uc-desc { font-size: .78rem; color: rgba(13,13,13,.65); line-height: 1.45; }
+.uc-challenge { grid-column: span 2; }
+@media(max-width:400px){ .uc-challenge { grid-column: span 1; } }
+.uc-badge { display: inline-block; margin-top: .55rem; background: var(--ink); color: var(--yellow); font-family: 'DM Mono', monospace; font-size: .67rem; padding: .12rem .55rem; border-radius: 2px; }
+
+/* DIVIDER */
+.stamp-rule {
+  display: flex; align-items: center; gap: .9rem;
+  margin: 2rem 0 1.4rem;
+}
+.stamp-rule::before, .stamp-rule::after { content: ''; flex: 1; height: 2.5px; background: var(--ink); }
+.stamp-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: .08em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* PAGE NAV */
+.pnav { display: flex; justify-content: space-between; margin-top: 2.5rem; gap: 1rem; flex-wrap: wrap; }
+.pnb {
+  border: 2.5px solid var(--ink);
+  border-radius: 0;
+  padding: .55rem 1.4rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.pnb:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+.pnb.nx { background: var(--yellow); }
+
+/* ============================================================ QUIZ (agreement style) */
+.quiz-section {
+  background: var(--white);
+  border: 2.5px solid var(--ink);
+  padding: 1.6rem 1.8rem;
+  box-shadow: 5px 5px 0 var(--ink);
+  margin: 1.1rem 0;
+}
+.quiz-section h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: .04em;
+  margin-bottom: .2rem;
+}
+.quiz-sub { font-size: .87rem; color: rgba(13,13,13,.65); margin-bottom: 1.2rem; }
+
+.qq {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 1.1rem 1.2rem;
+  margin: .8rem 0;
+  transition: border-color .25s, background .25s;
+}
+.qq.q-correct { border-color: var(--correct); background: var(--correct-bg); }
+.qq.q-wrong   { border-color: var(--wrong);   background: var(--wrong-bg); }
+
+.qq-num-text { display: flex; align-items: baseline; gap: .5rem; margin-bottom: .75rem; }
+.qq-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  background: var(--ink); color: var(--yellow);
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.qq-text { font-weight: 700; font-size: .97rem; line-height: 1.5; color: var(--ink); }
+.qq-text .blank { color: var(--yellow2); font-style: italic; border-bottom: 2px solid var(--yellow2); padding: 0 2px; }
+
+.qq-opts { display: flex; flex-wrap: wrap; gap: .45rem; row-gap: .4rem; }
+.qq-opt {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  padding: .38rem .9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: .88rem;
+  cursor: pointer;
+  transition: all .15s;
+  color: var(--ink);
+}
+.qq-opt:hover:not(:disabled) { background: var(--yellow); border-color: var(--ink); transform: translateY(-2px); box-shadow: 2px 2px 0 var(--ink); }
+.qq-opt.opt-correct { background: var(--correct); border-color: var(--correct); color: white; }
+.qq-opt.opt-wrong   { background: var(--wrong);   border-color: var(--wrong);   color: white; }
+.qq-opt.opt-reveal  { background: var(--correct); border-color: var(--correct); color: white; }
+.qq-opt:disabled { cursor: default; }
+
+.qq-exp { margin-top: .6rem; padding: .5rem .8rem; font-size: .86rem; font-weight: 600; line-height: 1.55; display: none; }
+.qq-exp.show { display: block; }
+.qq-exp.correct { background: var(--correct-bg); color: var(--correct); border-left: 4px solid var(--correct); }
+.qq-exp.wrong   { background: var(--wrong-bg);   color: var(--wrong);   border-left: 4px solid var(--wrong); }
+
+/* SCORE BAR */
+.score-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--ink);
+  padding: .85rem 1.3rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap; gap: .6rem;
+}
+.score-display {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: .06em;
+  color: var(--yellow);
+}
+.score-popcorn { font-size: 1.3rem; letter-spacing: 2px; }
+.reset-btn {
+  background: var(--yellow);
+  color: var(--ink);
+  border: 2px solid var(--yellow2);
+  padding: .38rem 1rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .95rem;
+  letter-spacing: .05em;
+  cursor: pointer;
+  transition: all .15s;
+}
+.reset-btn:hover { background: var(--yellow2); transform: translateY(-2px); }
+
+/* ============================================================ CHALLENGE GAME */
+.ch-lobby-card {
+  background: var(--ink);
+  border: 2.5px solid var(--ink);
+  padding: 2rem;
+  box-shadow: 8px 8px 0 var(--yellow2);
+  max-width: 600px; margin: 0 auto;
+  color: var(--paper);
+}
+.ch-lobby-card h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem; letter-spacing: .06em;
+  color: var(--yellow);
+  margin-bottom: .3rem;
+}
+.ch-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: .8rem; margin: 1.2rem 0; }
+.ch-stat { background: rgba(255,255,255,.07); padding: .9rem; text-align: center; }
+.ch-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--yellow); line-height: 1; }
+.ch-stat-lbl { font-size: .75rem; color: rgba(255,255,255,.6); margin-top: .1rem; font-family: 'DM Mono', monospace; }
+
+.htp { background: rgba(245,200,0,.08); border-left: 4px solid var(--yellow); padding: 1rem 1.2rem; margin-bottom: 1.4rem; }
+.htp h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--yellow); letter-spacing: .04em; margin-bottom: .5rem; }
+.htp ul { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+.htp ul li { font-size: .88rem; color: rgba(255,255,255,.85); line-height: 1.5; }
+
+.start-btn {
+  display: block; width: 100%;
+  background: var(--yellow); color: var(--ink);
+  border: none; padding: .95rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem; letter-spacing: .08em;
+  cursor: pointer; transition: all .2s;
+  box-shadow: 4px 4px 0 var(--yellow2);
+}
+.start-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--yellow2); }
+
+/* GAME HUD */
+.game-hud {
+  background: var(--ink);
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; gap: .5rem;
+  padding: .9rem 1.3rem;
+  margin-bottom: 1.1rem;
+}
+.hud-val { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; }
+.hud-lbl { font-family: 'DM Mono', monospace; font-size: .65rem; color: rgba(255,255,255,.5); letter-spacing: .06em; }
+.hud-left .hud-val  { color: var(--yellow); }
+.hud-right .hud-val { color: #ff9f40; }
+.hud-center { text-align: center; }
+.timer-ring-wrap { position: relative; width: clamp(54px,10vw,68px); height: clamp(54px,10vw,68px); margin: 0 auto; }
+.timer-ring-wrap svg { width: 100%; height: 100%; }
+.timer-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', sans-serif; font-size: 1.45rem; color: white; }
+
+/* QUESTION */
+.ch-qwrap {
+  background: var(--white);
+  border: 2.5px solid var(--ink);
+  padding: 1.8rem;
+  box-shadow: 5px 5px 0 var(--ink);
+  min-height: 240px;
+}
+.ch-part-tag {
+  display: inline-block;
+  background: var(--ink); color: var(--yellow);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .85rem; letter-spacing: .08em;
+  padding: .2rem .75rem;
+  margin-bottom: .9rem;
+}
+.ch-qtext {
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--ink); margin-bottom: 1.1rem;
+  line-height: 1.55;
+}
+.ch-qtext .boldword {
+  background: var(--yellow); color: var(--ink);
+  padding: 1px 4px; font-family: 'DM Mono', monospace;
+}
+.ch-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: .5rem; }
+.ch-opt {
+  background: var(--paper); border: 2px solid var(--ink);
+  padding: .72rem 1rem;
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: .9rem; cursor: pointer;
+  transition: all .15s; text-align: center;
+  color: var(--ink);
+}
+.ch-opt:hover:not(:disabled) { background: var(--yellow); border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.ch-opt.ch-correct { background: var(--correct); border-color: var(--correct); color: white; }
+.ch-opt.ch-wrong   { background: var(--wrong);   border-color: var(--wrong);   color: white; }
+.ch-opt.ch-reveal  { background: var(--correct); border-color: var(--correct); color: white; }
+.ch-opt:disabled { cursor: default; }
+
+.ch-fb { margin-top: .85rem; padding: .6rem .9rem; font-size: .87rem; font-weight: 600; line-height: 1.55; min-height: 36px; }
+.ch-fb.fb-ok    { background: var(--correct-bg); color: var(--correct); border-left: 4px solid var(--correct); }
+.ch-fb.fb-nope  { background: var(--wrong-bg);   color: var(--wrong);   border-left: 4px solid var(--wrong); }
+.ch-fb.fb-time  { background: #fff3cd; color: #856404; border-left: 4px solid #f5c800; }
+
+/* RESULTS */
+.results-card {
+  background: var(--ink); border: 2.5px solid var(--ink);
+  padding: 2rem; box-shadow: 8px 8px 0 var(--yellow2);
+  max-width: 500px; margin: 0 auto; text-align: center;
+  color: var(--paper);
+}
+.results-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--yellow); letter-spacing: .06em; margin-bottom: .3rem; }
+.results-score { font-family: 'Bebas Neue', sans-serif; font-size: 5.5rem; line-height: 1; color: var(--yellow); }
+.results-lbl { font-family: 'DM Mono', monospace; font-size: .78rem; color: rgba(255,255,255,.55); margin-bottom: 1.2rem; letter-spacing: .04em; }
+.results-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: .8rem; margin-bottom: 1.1rem; }
+.rs { background: rgba(255,255,255,.07); padding: .85rem .5rem; }
+.rs-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--yellow); }
+.rs-lbl { font-size: .73rem; font-family: 'DM Mono', monospace; color: rgba(255,255,255,.55); }
+.results-msg { font-size: .9rem; line-height: 1.6; padding: .8rem; background: rgba(255,255,255,.07); margin-bottom: 1.2rem; }
+.res-btns { display: flex; gap: .7rem; justify-content: center; flex-wrap: wrap; }
+.res-btn {
+  background: var(--yellow); color: var(--ink);
+  border: none; padding: .7rem 1.4rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem; letter-spacing: .06em;
+  cursor: pointer; transition: all .2s;
+  box-shadow: 3px 3px 0 var(--yellow2);
+}
+.res-btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--yellow2); }
+.res-btn.ghost { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); box-shadow: 3px 3px 0 rgba(255,255,255,.1); }
+
+
+/* ── LIGHTNING / EFFECTS ── */
+#fx-canvas { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:998; }
+#timer-ring.urgent { animation: ring-pulse 0.4s ease-in-out infinite alternate; }
+@keyframes ring-pulse { from { filter:drop-shadow(0 0 4px #ef4444); } to { filter:drop-shadow(0 0 16px #ef4444) drop-shadow(0 0 30px #ef4444); } }
+.ch-qwrap { transition: box-shadow 0.1s; }
+.ch-qwrap.lightning-glow { box-shadow: 0 0 0 3px #f5c800, 5px 5px 0 #f5c800 !important; }
+
+/* BONUS FLASH */
+.bonus-flash {
+  position: fixed; top: 40%; left: 50%; transform: translate(-50%,-50%);
+  background: var(--yellow); color: var(--ink);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem; letter-spacing: .08em;
+  padding: .6rem 1.8rem;
+  border: 4px solid var(--ink); box-shadow: 6px 6px 0 var(--ink);
+  pointer-events: none; z-index: 999;
+  opacity: 0; transition: opacity .12s;
+}
+.bonus-flash.show { opacity: 1; }
+
+
+/* ── LARGE SCREENS (1200px+) ── */
+@media(min-width:1200px){
+  .pw { max-width: min(1000px, 90vw); }
+  .press-title { font-size: 7rem; }
+  .rule-card { padding: 2rem 2.5rem; }
+  .quiz-section { padding: 2rem 2.5rem; }
+  .ch-qwrap { padding: 2.2rem; }
+  .ch-qtext { font-size: 1.2rem; }
+  .qq-text { font-size: 1.05rem; }
+}
+
+/* ── TABLET (601–900px) ── */
+@media(min-width:601px) and (max-width:900px){
+  .press-title { font-size: clamp(3rem,8vw,5rem); }
+  .unit-grid { grid-template-columns: repeat(3, 1fr); }
+  .ch-stats { grid-template-columns: repeat(3,1fr); }
+}
+
+/* ── MOBILE (≤600px) ── full pass ── */
+@media(max-width:600px){
+  /* layout */
+  .two-col { grid-template-columns: 1fr; }
+  .ch-opts { grid-template-columns: 1fr; }
+  .unit-grid { grid-template-columns: 1fr 1fr; }
+  .results-stats, .ch-stats { grid-template-columns: repeat(3,1fr); }
+  .res-btns { flex-direction: column; }
+
+  /* typography */
+  .press-title { font-size: clamp(2.8rem, 12vw, 4.2rem); line-height: .92; }
+  .tab { font-size: .82rem; padding: .6rem .75rem; }
+
+  /* rule cards */
+  .rule-card { padding: 1.1rem 1rem 1.1rem 1.1rem; box-shadow: 3px 3px 0 var(--ink); }
+  .rule-card::before { font-size: 3.5rem; top: .2rem; right: .5rem; }
+  .rule-title { font-size: 1.3rem; }
+  .rule-body { font-size: .9rem; }
+  .ex-block { padding: .65rem .8rem; }
+  .exception { padding: .6rem .8rem; font-size: .85rem; }
+  .mini-card { padding: .75rem .8rem; }
+  .hi-cap { font-size: .82em; }
+
+  /* quiz */
+  .quiz-section { padding: 1.1rem 1rem; box-shadow: 3px 3px 0 var(--ink); }
+  .quiz-section h3 { font-size: 1.25rem; }
+  .qq { padding: .85rem .9rem; }
+  .qq-num { width:22px; height:22px; font-size:.72rem; }
+  .qq-text { font-size:.9rem; }
+  .qq-opt { padding:.35rem .7rem; font-size:.84rem; }
+  .score-bar { padding: .65rem .9rem; gap:.4rem; }
+  .score-display { font-size: 1.1rem; }
+  .score-popcorn { font-size: 1.1rem; letter-spacing: 1px; }
+
+  /* challenge game */
+  .game-hud { padding: .6rem .75rem; gap: .3rem; }
+  .hud-val { font-size: 1.35rem; }
+  .hud-lbl { font-size: .6rem; }
+  .timer-ring-wrap { width: 56px; height: 56px; }
+  .timer-ring-wrap svg { width: 56px; height: 56px; }
+  .timer-num { font-size: 1.15rem; }
+  .ch-qwrap { padding: 1.1rem 1rem; }
+  .ch-part-tag { font-size: .76rem; padding: .16rem .6rem; margin-bottom: .65rem; }
+  .ch-qtext { font-size: .97rem; margin-bottom: .85rem; line-height: 1.5; }
+  .ch-opt { padding: .65rem .75rem; font-size: .88rem; }
+  .ch-fb { font-size: .82rem; padding: .5rem .7rem; }
+  .ch-lobby-card { padding: 1.3rem 1.1rem; box-shadow: 5px 5px 0 var(--yellow2); }
+  .ch-lobby-card h2 { font-size: 2.2rem; }
+  .ch-stats { gap: .5rem; }
+  .ch-stat-num { font-size: 1.7rem; }
+  .ch-stat-lbl { font-size: .65rem; }
+  .htp { padding: .8rem .9rem; }
+  .htp h4 { font-size: 1rem; }
+  .htp ul li { font-size: .82rem; }
+  .start-btn { font-size: 1.2rem; padding: .8rem; }
+
+  /* results */
+  .results-card { padding: 1.4rem 1.1rem; }
+  .results-title { font-size: 1.6rem; }
+  .results-score { font-size: 4rem; }
+  .rs-num { font-size: 1.5rem; }
+  .rs-lbl { font-size: .65rem; }
+  .results-msg { font-size: .84rem; }
+  .res-btn { padding: .65rem 1.1rem; font-size: .95rem; }
+
+  /* nav */
+  .pnav { flex-direction: column; gap: .7rem; }
+  .pnb { text-align: center; box-shadow: 2px 2px 0 var(--ink); }
+  .pnb.nx { order: -1; }
+
+  /* home */
+  .uc { padding: .9rem .8rem .85rem; box-shadow: 3px 3px 0 var(--ink); }
+  .uc-num { font-size: 1.8rem; }
+  .uc-title { font-size: 1rem; }
+  .uc-desc { font-size: .73rem; }
+  .uc-badge { font-size: .62rem; }
+
+  /* stamp rule divider */
+  .stamp-rule { margin: 1.4rem 0 1rem; }
+  .stamp-label { font-size: .95rem; }
+
+  /* bonus flash */
+  .bonus-flash { font-size: 1.8rem; padding: .45rem 1.2rem; }
+}
+
+/* ── VERY SMALL (≤360px) ── */
+@media(max-width:360px){
+  .press-title { font-size: clamp(2.2rem, 13vw, 3rem); }
+  .unit-grid { grid-template-columns: 1fr; }
+  .ch-opts { grid-template-columns: 1fr; }
+  .tab { padding: .55rem .55rem; font-size: .75rem; }
+  .hud-val { font-size: 1.15rem; }
+  .results-score { font-size: 3.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- TABS -->
+<nav id="tabs">
+  <button class="tab active" onclick="sv('home')">THE PRESS ROOM</button>
+  <button class="tab" onclick="sv('part1')">PART 1</button>
+  <button class="tab" onclick="sv('part2')">ORGANIZATIONS</button>
+  <button class="tab" onclick="sv('part3')">PART 3</button>
+  <button class="tab" onclick="sv('part4')">PART 4</button>
+  <button class="tab" onclick="sv('challenge')">★ CHALLENGE</button>
+</nav>
+
+<!-- ============================================================ HOME -->
+<div class="view active" id="view-home">
+<div class="pw">
+  <div class="eyebrow">English I · Mr. Lindeman</div>
+  <h1 class="press-title">CAPITAL<br><span>LETTERS</span><br>MATTER.</h1>
+  <p class="pdeck">Every word that gets capitalized is getting promoted. Learn the 21 rules that decide which words earn that distinction, then prove you know them in the Challenge.</p>
+
+  <div class="unit-grid">
+    <div class="uc" onclick="sv('part1')">
+      <div class="uc-accent"></div>
+      <div class="uc-num">01</div>
+      <div class="uc-title">Part 1</div>
+      <div class="uc-desc">First words, quotes, poetry, pronouns &amp; letters.</div>
+      <div class="uc-badge">6 RULES</div>
+    </div>
+    <div class="uc" onclick="sv('part2')">
+      <div class="uc-accent" style="background:var(--ink);"></div>
+      <div class="uc-num">02</div>
+      <div class="uc-title">Part 2</div>
+      <div class="uc-desc">Organizations, buildings, brands, events &amp; seasons.</div>
+      <div class="uc-badge">7 RULES</div>
+    </div>
+    <div class="uc" onclick="sv('part3')">
+      <div class="uc-accent"></div>
+      <div class="uc-num">03</div>
+      <div class="uc-title">Part 3</div>
+      <div class="uc-desc">Nationalities, religions, vehicles, planets &amp; subjects.</div>
+      <div class="uc-badge">5 RULES</div>
+    </div>
+    <div class="uc" onclick="sv('part4')">
+      <div class="uc-accent" style="background:var(--ink);"></div>
+      <div class="uc-num">04</div>
+      <div class="uc-title">Part 4</div>
+      <div class="uc-desc">Titles, family words &amp; titles of written works.</div>
+      <div class="uc-badge">3 RULES</div>
+    </div>
+    <div class="uc uc-challenge" onclick="sv('challenge')">
+      <div class="uc-accent" style="background:var(--yellow2);"></div>
+      <div class="uc-num" style="opacity:1;color:var(--yellow2);">★</div>
+      <div class="uc-title">Lightning Challenge</div>
+      <div class="uc-desc">30 questions, 45-second timer, streak multiplier. Test all 4 parts.</div>
+      <div class="uc-badge" style="background:var(--yellow);color:var(--ink);">PLAY NOW</div>
+    </div>
+  </div>
+
+  <p style="font-family:'DM Mono',monospace;font-size:.78rem;color:rgba(13,13,13,.5);">→ Each section has 10 practice questions. The Challenge pulls 30 randomly.</p>
+</div>
+</div>
+
+<!-- ============================================================ PART 1 -->
+<div class="view" id="view-part1">
+<div class="pw">
+  <div class="eyebrow">Part 1 of 4</div>
+  <h1 class="press-title">FIRST<br>WORDS &amp;<br>BASICS</h1>
+
+  <div class="rule-card yellow-card" data-num="1">
+    <div class="rule-title">First Word of Every Sentence</div>
+    <div class="rule-body">Capitalize the <strong>first word in every sentence</strong>. No exceptions.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLE</div>
+      <p><span class="hi-cap">T</span>he second Seminole War lasted nearly eight years.<br>
+      <span class="hi-cap">A</span>fter the war, many Seminoles remained in the Everglades.</p>
+    </div>
+  </div>
+
+  <div class="rule-card" data-num="2">
+    <div class="rule-title">First Word of a Quoted Sentence</div>
+    <div class="rule-body">The first word of a quoted sentence begins with a capital letter, <strong>whether or not the quotation begins the sentence.</strong></div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <p>Hagrid says, <strong>"<span class="hi-cap">Y</span>ou're a wizard, Harry."</strong><br>
+      <strong>"<span class="hi-cap">I</span>f you have built castles in the air,"</strong> Thoreau writes, <strong>"your work need not be lost."</strong></p>
+    </div>
+    <div class="exception">
+      <strong>HEADS UP:</strong> Capitalize only if the person you're quoting capitalized it, <em>or</em> it's the first word of the sentence.<br>
+      What is suggested by the metaphor <strong>"castles in the air"</strong>? → lowercase, it's mid-sentence.
+    </div>
+    <div class="ex-block">
+      <div class="ex-label">DIALOGUE FRAGMENT</div>
+      <p>When asked about Harry Potter, Jacob replied, <strong>"<span class="hi-cap">O</span>nly one book."</strong><br>
+      <em>Fragments used in dialogue also get a capital first letter.</em></p>
+    </div>
+  </div>
+
+  <div class="rule-card ink-card" data-num="3">
+    <div class="rule-title">First Word of a Line of Poetry</div>
+    <div class="rule-body">Traditionally, the first word in each line of a poem is capitalized.</div>
+    <div class="ex-block">
+      <div class="ex-label">MAYA ANGELOU</div>
+      <p><span class="hi-cap">S</span>torm, blow me from here<br>
+      <span class="hi-cap">W</span>ith your fiercest wind<br>
+      <span class="hi-cap">L</span>et me float across the sky<br>
+      <span class="hi-cap">'T</span>il I can rest again.</p>
+    </div>
+  </div>
+
+  <div class="rule-card yellow-card" data-num="4">
+    <div class="rule-title">The Pronoun I and Interjection O</div>
+    <div class="rule-body">Always capitalize the pronoun <span class="hi-cap">I</span> and the interjection <span class="hi-cap">O</span>.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul>
+        <li>"Hear us, <span class="hi-cap">O</span> Lord"</li>
+        <li><span class="hi-cap">I</span> finished the race, but oh was <span class="hi-cap">I</span> exhausted.</li>
+        <li>The first line <span class="hi-cap">I</span> read was "Hear us, <span class="hi-cap">O</span> Zeus."</li>
+      </ul>
+    </div>
+    <div class="exception"><strong>Note:</strong> The interjection <em>oh</em> is NOT capitalized unless it begins a sentence.</div>
+  </div>
+
+  <div class="rule-card" data-num="5">
+    <div class="rule-title">Salutation &amp; Closing of a Letter</div>
+    <div class="rule-body">Capitalize the <strong>first word</strong> in both the <strong>salutation</strong> (greeting) and <strong>closing</strong> of a letter.</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Salutations</h4><ul><li><span class="hi-cap">D</span>ear Mr. Lindeman,</li><li><span class="hi-cap">M</span>y dear Jennifer,</li></ul></div>
+      <div class="mini-card"><h4>Closings</h4><ul><li><span class="hi-cap">S</span>incerely yours,</li><li><span class="hi-cap">Y</span>ours truly,</li></ul></div>
+    </div>
+  </div>
+
+  <div class="rule-card ink-card" data-num="6">
+    <div class="rule-title">Proper Nouns &amp; Proper Adjectives</div>
+    <div class="rule-body">Capitalize <strong>proper nouns</strong> (specific names) and <strong>proper adjectives</strong> (adjectives formed from proper nouns).</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Proper Noun</h4><ul><li>Dickens</li><li>France</li><li>the Midwest</li><li>Picasso, Lassie</li><li>Mr. Lindeman</li></ul></div>
+      <div class="mini-card"><h4>Proper Adjective</h4><ul><li><span class="hi-cap">D</span>ickensian character</li><li><span class="hi-cap">F</span>rench bread</li><li><span class="hi-cap">M</span>idwestern values</li><li><span class="hi-cap">E</span>lizabethan times</li></ul></div>
+    </div>
+  </div>
+
+  <div class="rule-card yellow-card" data-num="7">
+    <div class="rule-title">Names of Persons &amp; Animals</div>
+    <div class="rule-body">Capitalize the names of specific <strong>persons and animals</strong>.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul>
+        <li>Nolan Ryan &nbsp;·&nbsp; Dr. Eileen Cruz &nbsp;·&nbsp; Jerome Wilson, Jr.</li>
+        <li>Lassie &nbsp;·&nbsp; Princess Leia &nbsp;·&nbsp; Percy (Mr. Lindeman's lizard)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stamp-rule"><div class="stamp-label">✦ Practice ✦</div></div>
+  <div class="quiz-section">
+    <h3>PART 1 PRACTICE</h3>
+    <p class="quiz-sub">Choose the correct answer. Feedback appears after each question.</p>
+    <div id="quiz-part1"></div>
+    <div class="score-bar">
+      <div class="score-display" id="score-part1">🎬 0 / 10</div>
+      <div class="score-popcorn" id="pop-part1">🍿🍿🍿🍿🍿🍿🍿🍿🍿🍿</div>
+      <button class="reset-btn" onclick="resetQ('part1')">↺ RESET</button>
+    </div>
+  </div>
+
+  <div class="pnav">
+    <button class="pnb" onclick="sv('home')">← HOME</button>
+    <button class="pnb nx" onclick="sv('part2')">PART 2 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ PART 2 -->
+<div class="view" id="view-part2">
+<div class="pw">
+  <div class="eyebrow">Part 2 of 4</div>
+  <h1 class="press-title">PLACES,<br>ORGANIZATIONS<br>&amp; EVENTS</h1>
+
+  <div class="rule-card" data-num="1">
+    <div class="rule-title">Geographical Names</div>
+    <div class="rule-body">Capitalize the names of <strong>continents, countries, cities, rivers, mountains, parks, highways</strong>, and other geographical features.</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Capitalize</h4><ul><li>Europe · Argentina · Chicago</li><li>Galveston Island · Allegheny Mountains</li><li>Atlantic Ocean · Interstate 10</li><li>Fontainebleau State Park · Orleans Parish</li><li>the Northeast · Great Plains</li></ul></div>
+      <div class="mini-card"><h4>Do NOT capitalize</h4><ul><li><em>directions:</em></li><li>"I am from the <span class="hi-cap">S</span>outh." (region)</li><li>"Drive south to get there." (direction)</li></ul></div>
+    </div>
+  </div>
+
+  <div class="rule-card yellow-card" data-num="2">
+    <div class="rule-title">Organizations, Teams, Institutions &amp; Government Bodies</div>
+    <div class="rule-body">Capitalize the full official names of organizations, sports teams, schools, and government agencies.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul>
+        <li>American Medical Association</li>
+        <li>New Orleans Saints &nbsp;·&nbsp; Harlem Globetrotters</li>
+        <li>Mount Carmel Academy &nbsp;·&nbsp; Florida State University</li>
+        <li>Department of the Interior &nbsp;·&nbsp; New Orleans City Council</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card ink-card" data-num="3">
+    <div class="rule-title">Businesses &amp; Brand Names</div>
+    <div class="rule-body">Capitalize the names of <strong>businesses</strong> and the <strong>brand names</strong> of business products.</div>
+    <div class="ex-block">
+      <div class="ex-label">CAPITALIZE</div>
+      <ul><li>Forever 21 &nbsp;·&nbsp; Apple Macintosh &nbsp;·&nbsp; GMC Jimmy</li></ul>
+    </div>
+    <div class="exception"><strong>Watch out:</strong> A common noun that follows a brand name and identifies the type of product is NOT capitalized.<br>→ Starbucks <em>coffee</em> &nbsp;·&nbsp; Apple <em>computer</em> &nbsp;·&nbsp; Schwinn <em>bicycle</em></div>
+  </div>
+
+  <div class="rule-card" data-num="4">
+    <div class="rule-title">Buildings &amp; Other Structures</div>
+    <div class="rule-body">Capitalize the names of specific <strong>buildings and structures</strong>.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul><li>Detroit Westin Hotel &nbsp;·&nbsp; Fox Theater &nbsp;·&nbsp; Colosseum</li><li>Metropolitan Museum &nbsp;·&nbsp; Saenger Theater</li><li>Crescent City Connection</li></ul>
+    </div>
+  </div>
+
+  <div class="rule-card yellow-card" data-num="5">
+    <div class="rule-title">Monuments, Memorials &amp; Awards</div>
+    <div class="rule-body">Capitalize the names of monuments, memorials, and awards.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul><li>Dinosaur National Monument &nbsp;·&nbsp; Mount Rushmore</li><li>Korean War Veterans Memorial &nbsp;·&nbsp; Lincoln Memorial</li><li>Nobel Prize &nbsp;·&nbsp; Heisman Trophy &nbsp;·&nbsp; Nobel Peace Prize</li></ul>
+    </div>
+  </div>
+
+  <div class="rule-card" data-num="6">
+    <div class="rule-title">Historical Events, Periods, Holidays &amp; Calendar Items</div>
+    <div class="rule-body">Capitalize historical events &amp; periods, special events, holidays, months, and days of the week. <strong>Do not capitalize</strong> general time references.</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Capitalize</h4><ul><li>Battle of Gettysburg · Dark Ages</li><li>Great Depression · Renaissance</li><li>Valentine's Day · Christmas</li><li>October · Friday · NBA All-Star Game</li></ul></div>
+      <div class="mini-card"><h4>Do NOT capitalize</h4><ul><li>century · decade · era</li><li>"…during the <em>fifth</em> century"</li></ul></div>
+    </div>
+  </div>
+
+  <div class="rule-card ink-card" data-num="7">
+    <div class="rule-title">Seasons</div>
+    <div class="rule-body">Do <strong>NOT</strong> capitalize the name of a season <em>unless</em> it is being <strong>personified</strong> or is part of a <strong>proper name</strong>.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul>
+        <li>We look forward to <em>spring</em> after the long <em>winter</em>. ← no cap</li>
+        <li><span class="hi-cap">A</span>utumn greeted us as a long-lost friend. ← personified = cap</li>
+        <li>Are you going to the <span class="hi-cap">W</span>inter Formal dance? ← proper name = cap</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stamp-rule"><div class="stamp-label">✦ Practice ✦</div></div>
+  <div class="quiz-section">
+    <h3>PART 2 PRACTICE</h3>
+    <p class="quiz-sub">Choose the correct answer. Explanations appear after each question.</p>
+    <div id="quiz-part2"></div>
+    <div class="score-bar">
+      <div class="score-display" id="score-part2">🎬 0 / 10</div>
+      <div class="score-popcorn" id="pop-part2">🍿🍿🍿🍿🍿🍿🍿🍿🍿🍿</div>
+      <button class="reset-btn" onclick="resetQ('part2')">↺ RESET</button>
+    </div>
+  </div>
+
+  <div class="pnav">
+    <button class="pnb" onclick="sv('part1')">← PART 1</button>
+    <button class="pnb nx" onclick="sv('part3')">PART 3 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ PART 3 -->
+<div class="view" id="view-part3">
+<div class="pw">
+  <div class="eyebrow">Part 3 of 4</div>
+  <h1 class="press-title">PEOPLES,<br>PLANETS<br>&amp; MORE</h1>
+
+  <div class="rule-card yellow-card" data-num="1">
+    <div class="rule-title">Nationalities &amp; Peoples</div>
+    <div class="rule-body">Capitalize the names of <strong>nationalities, races, and ethnic groups</strong>.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul><li>Italian &nbsp;·&nbsp; Hispanic &nbsp;·&nbsp; Navajo &nbsp;·&nbsp; Micronesian &nbsp;·&nbsp; Cherokee</li></ul>
+    </div>
+  </div>
+
+  <div class="rule-card" data-num="2">
+    <div class="rule-title">Religions, Holy Days &amp; Sacred Writings</div>
+    <div class="rule-body">Capitalize names of <strong>religions and their followers, holy days and celebrations, sacred writings, and specific deities</strong>.</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Capitalize</h4><ul><li>Judaism · Christianity · Hinduism</li><li>Ash Wednesday · Hanukkah</li><li>the Bible · the Koran · Dead Sea Scrolls</li><li>God · Jesus · the Holy Spirit</li></ul></div>
+      <div class="mini-card"><h4>Exception</h4><ul><li><em>god</em> and <em>goddess</em> are NOT capitalized when referring to deities of ancient mythology:</li><li>"The Roman <em>goddess</em> of grain was Ceres."</li></ul></div>
+    </div>
+  </div>
+
+  <div class="rule-card ink-card" data-num="3">
+    <div class="rule-title">Ships, Trains, Aircraft &amp; Spacecraft</div>
+    <div class="rule-body">Capitalize the names of <strong>specific ships, trains, aircraft, and spacecraft</strong>. The make and model of a vehicle are also capitalized.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul>
+        <li>Titanic &nbsp;·&nbsp; Queen Mary &nbsp;·&nbsp; Orient Express</li>
+        <li>Air Force One &nbsp;·&nbsp; Apollo 11 &nbsp;·&nbsp; Atlantis</li>
+        <li>Kia Seltos &nbsp;·&nbsp; Mitsubishi Eclipse &nbsp;·&nbsp; GMC Jimmy</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card yellow-card" data-num="4">
+    <div class="rule-title">Planets, Stars &amp; Heavenly Bodies</div>
+    <div class="rule-body">Capitalize the names of <strong>planets, stars, constellations, and other heavenly bodies</strong>.</div>
+    <div class="ex-block">
+      <div class="ex-label">CAPITALIZE</div>
+      <ul><li>Neptune &nbsp;·&nbsp; Mars &nbsp;·&nbsp; Andromeda Galaxy &nbsp;·&nbsp; Great Nebula &nbsp;·&nbsp; Orion &nbsp;·&nbsp; Milky Way</li></ul>
+    </div>
+    <div class="exception">
+      <strong>Two exceptions to know:</strong><br>
+      • <em>earth</em> is only capitalized when used with another capitalized heavenly body: "Unlike <span class="hi-cap">E</span>arth, neither Mercury nor Venus has a moon."<br>
+      • <em>sun</em> and <em>moon</em> are generally <strong>not</strong> capitalized: "The sun is a star. The moon is the earth's only natural satellite."
+    </div>
+  </div>
+
+  <div class="rule-card" data-num="5">
+    <div class="rule-title">School Subjects</div>
+    <div class="rule-body">Do <strong>NOT</strong> capitalize school subjects, <em>except</em> for course names followed by a number and names of language classes.</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Do NOT capitalize</h4><ul><li>algebra · chemistry · history</li><li>art · biology · math</li></ul></div>
+      <div class="mini-card"><h4>DO capitalize</h4><ul><li>Algebra II · Chemistry I · Biology I</li><li>English · Spanish · Latin · French</li></ul></div>
+    </div>
+    <div class="exception">
+      <strong>Class names:</strong> Do not capitalize <em>freshman, sophomore, junior,</em> or <em>senior</em> unless part of a proper noun.<br>
+      → "A number of <em>sophomores</em> attended <span class="hi-cap">J</span>unior Prom." &nbsp;·&nbsp; "The <span class="hi-cap">S</span>ophomore Singers performed."
+    </div>
+  </div>
+
+  <div class="stamp-rule"><div class="stamp-label">✦ Practice ✦</div></div>
+  <div class="quiz-section">
+    <h3>PART 3 PRACTICE</h3>
+    <p class="quiz-sub">Choose the correct answer. Explanations appear after each question.</p>
+    <div id="quiz-part3"></div>
+    <div class="score-bar">
+      <div class="score-display" id="score-part3">🎬 0 / 10</div>
+      <div class="score-popcorn" id="pop-part3">🍿🍿🍿🍿🍿🍿🍿🍿🍿🍿</div>
+      <button class="reset-btn" onclick="resetQ('part3')">↺ RESET</button>
+    </div>
+  </div>
+
+  <div class="pnav">
+    <button class="pnb" onclick="sv('part2')">← PART 2</button>
+    <button class="pnb nx" onclick="sv('part4')">PART 4 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ PART 4 -->
+<div class="view" id="view-part4">
+<div class="pw">
+  <div class="eyebrow">Part 4 of 4</div>
+  <h1 class="press-title">TITLES<br>&amp; FAMILY<br>WORDS</h1>
+
+  <div class="rule-card yellow-card" data-num="1">
+    <div class="rule-title">Person's Title Before a Name</div>
+    <div class="rule-body">Capitalize a person's title when it comes <strong>before the person's name</strong>.</div>
+    <div class="ex-block">
+      <div class="ex-label">CAPITALIZE</div>
+      <ul><li><span class="hi-cap">G</span>eneral Powell &nbsp;·&nbsp; <span class="hi-cap">P</span>resident Kennedy &nbsp;·&nbsp; <span class="hi-cap">A</span>rchbishop Aymond</li><li><span class="hi-cap">G</span>overnor Edwards &nbsp;·&nbsp; <span class="hi-cap">M</span>rs. Ruckert</li></ul>
+    </div>
+    <div class="exception">
+      <strong>NOT capitalized</strong> when used alone or after a name, especially with <em>a</em> or <em>the</em>:<br>
+      → "Who was the <em>president</em> during WWII?" &nbsp;·&nbsp; "She served as <em>governor</em> of New Jersey."<br><br>
+      <strong>IS capitalized</strong> when used alone in <strong>direct address</strong>:<br>
+      → "Well, <span class="hi-cap">M</span>ayor, will you please test the microphone?"<br>
+      → "Do you intend to visit, <span class="hi-cap">G</span>overnor?"
+    </div>
+  </div>
+
+  <div class="rule-card ink-card" data-num="2">
+    <div class="rule-title">Family Relationship Words</div>
+    <div class="rule-body">Capitalize a word showing <strong>family relationship</strong> when it is used <strong>before or in place of</strong> the person's name, unless the word follows a possessive noun or pronoun.</div>
+    <div class="two-col">
+      <div class="mini-card"><h4>Capitalize</h4><ul><li><span class="hi-cap">A</span>unt Brenda</li><li><span class="hi-cap">G</span>randmother Bechtel</li><li><span class="hi-cap">M</span>awMaw Ruth</li><li>"Here comes <span class="hi-cap">U</span>ncle Randy!"</li></ul></div>
+      <div class="mini-card"><h4>Do NOT capitalize</h4><ul><li>My <em>aunt</em> Brenda</li><li>Maria's <em>grandmother</em></li><li>Rory's <em>aunt</em> Katherine</li><li>"I asked my <em>uncle</em>."</li></ul></div>
+    </div>
+  </div>
+
+  <div class="rule-card" data-num="3">
+    <div class="rule-title">Titles of Written Works</div>
+    <div class="rule-body">Capitalize the <strong>first and last words</strong> and all other <strong>important words</strong> in titles and subtitles. Do not capitalize articles, prepositions, or conjunctions <em>unless</em> they are the first word.</div>
+    <div class="ex-block">
+      <div class="ex-label">EXAMPLES</div>
+      <ul>
+        <li><em>Harry Potter and the Sorcerer's Stone</em> ← "and" + "the" not capped mid-title</li>
+        <li><em>Gone with the Wind</em> ← "with" + "the" not capped</li>
+        <li><em>The Outsiders</em> ← "The" IS capped (first word)</li>
+        <li><em>The Atlantic Monthly</em> vs. <em>the Rocky Mountain News</em> ← "the" only capped if part of official title</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stamp-rule"><div class="stamp-label">✦ Practice ✦</div></div>
+  <div class="quiz-section">
+    <h3>PART 4 PRACTICE</h3>
+    <p class="quiz-sub">Choose the correct answer. Explanations appear after each question.</p>
+    <div id="quiz-part4"></div>
+    <div class="score-bar">
+      <div class="score-display" id="score-part4">🎬 0 / 10</div>
+      <div class="score-popcorn" id="pop-part4">🍿🍿🍿🍿🍿🍿🍿🍿🍿🍿</div>
+      <button class="reset-btn" onclick="resetQ('part4')">↺ RESET</button>
+    </div>
+  </div>
+
+  <div class="pnav">
+    <button class="pnb" onclick="sv('part3')">← PART 3</button>
+    <button class="pnb nx" onclick="sv('challenge')">★ CHALLENGE →</button>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ CHALLENGE -->
+<div class="view" id="view-challenge">
+<div class="pw">
+  <div class="eyebrow">★ Final Challenge</div>
+  <h1 class="press-title">LIGHTNING<br>ROUND</h1>
+
+  <div id="ch-lobby">
+    <div class="ch-lobby-card">
+      <h2>CAPITAL QUIZ</h2>
+      <p style="font-size:.92rem;color:rgba(255,255,255,.7);margin-bottom:1.2rem;line-height:1.6;">30 questions drawn from all 4 parts. Build a streak for multiplied points. Beat your high score.</p>
+      <div class="ch-stats">
+        <div class="ch-stat"><div class="ch-stat-num" id="hi-display">0</div><div class="ch-stat-lbl">HIGH SCORE</div></div>
+        <div class="ch-stat"><div class="ch-stat-num">30</div><div class="ch-stat-lbl">QUESTIONS</div></div>
+        <div class="ch-stat"><div class="ch-stat-num">45s</div><div class="ch-stat-lbl">PER QUESTION</div></div>
+      </div>
+      <div class="htp">
+        <h4>HOW TO PLAY</h4>
+        <ul>
+          <li>⏱ 45 seconds per question. Answer fast for a speed bonus!</li>
+          <li>🔥 Build a streak for multiplied points (2×, 3×, 4×...)</li>
+          <li>💀 Wrong answer or timeout breaks your streak</li>
+          <li>🏆 High score saves for your session</li>
+        </ul>
+      </div>
+      <button class="start-btn" onclick="startChallenge()">⚡ START CHALLENGE</button>
+    </div>
+  </div>
+
+  <div id="ch-game" style="display:none;">
+    <div class="game-hud">
+      <div class="hud-left"><div class="hud-lbl">SCORE</div><div class="hud-val" id="ch-score">0</div></div>
+      <div class="hud-center">
+        <div class="timer-ring-wrap">
+          <svg width="68" height="68" viewBox="0 0 68 68">
+            <circle cx="34" cy="34" r="29" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="5"/>
+            <circle cx="34" cy="34" r="29" fill="none" stroke="#f5c800" stroke-width="5"
+              stroke-dasharray="182.2" stroke-dashoffset="0" id="timer-ring"
+              stroke-linecap="round" transform="rotate(-90 34 34)"/>
+          </svg>
+          <div class="timer-num" id="ch-timer">45</div>
+        </div>
+        <div class="hud-lbl" style="text-align:center;margin-top:2px;">Q <span id="ch-qnum">1</span>/30</div>
+      </div>
+      <div class="hud-right"><div class="hud-lbl">STREAK</div><div class="hud-val" id="ch-streak">0🔥</div></div>
+    </div>
+    <div class="ch-qwrap" id="ch-qwrap">
+      <div class="ch-part-tag" id="ch-tag">PART 1</div>
+      <div class="ch-qtext" id="ch-qtext">Loading...</div>
+      <div class="ch-opts" id="ch-opts"></div>
+      <div class="ch-fb" id="ch-fb"></div>
+    </div>
+  </div>
+
+  <div id="ch-results" style="display:none;">
+    <div class="results-card">
+      <div class="results-title" id="res-title">GAME OVER</div>
+      <div class="results-score" id="res-score">0</div>
+      <div class="results-lbl">FINAL SCORE</div>
+      <div class="results-stats">
+        <div class="rs"><div class="rs-num" id="rs-correct">0</div><div class="rs-lbl">CORRECT</div></div>
+        <div class="rs"><div class="rs-num" id="rs-streak">0</div><div class="rs-lbl">BEST STREAK</div></div>
+        <div class="rs"><div class="rs-num" id="rs-hi">0</div><div class="rs-lbl">HIGH SCORE</div></div>
+      </div>
+      <div class="results-msg" id="res-msg"></div>
+      <div class="res-btns">
+        <button class="res-btn" onclick="startChallenge()">⚡ PLAY AGAIN</button>
+        <button class="res-btn ghost" onclick="showLobby()">← LOBBY</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pnav" style="margin-top:2rem;">
+    <button class="pnb" onclick="sv('part4')">← PART 4</button>
+    <button class="pnb nx" onclick="sv('home')">🏠 HOME</button>
+  </div>
+</div>
+</div>
+
+<!-- BONUS FLASH -->
+<div class="bonus-flash" id="bonus-flash"></div>
+
+<script>
+// ============================================================ VIEW SWITCH
+const tmap = {home:0,part1:1,part2:2,part3:3,part4:4,challenge:5};
+const qBuilt = {};
+
+function sv(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.tab')[tmap[name]].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  // lazy-build section quizzes
+  const qmap = {part1:'part1',part2:'part2',part3:'part3',part4:'part4'};
+  if (qmap[name] && !qBuilt[name]) {
+    buildSectionQuiz(name);
+    qBuilt[name] = true;
+  }
+}
+
+// ============================================================ QUIZ DATA
+const allQs = {
+  part1: [
+    {q:'Which sentence is correctly capitalized?',opts:['the river flows south.','The river flows South.','The river flows south.','the River flows south.'],ans:'The river flows south.',exp:'Every sentence begins with a capital letter. "south" here is a direction, not a region name, so it stays lowercase.'},
+    {q:'In a letter, which closing is correct?',opts:['sincerely Yours,','Sincerely yours,','Sincerely Yours,','sincerely yours,'],ans:'Sincerely yours,',exp:'Only capitalize the FIRST word of a letter closing. "yours" follows, so it stays lowercase.'},
+    {q:'Hagrid says, "___ a wizard, Harry." Which word fills the blank?',opts:['"you\'re','""You\'re','""you\'re','""You\'Re'],ans:'\"You\'re',exp:'The first word of a quoted sentence is always capitalized, even mid-sentence after "says,"'},
+    {q:'Which sentence uses the pronoun I correctly?',opts:['My friend and i went to the store.','My friend and I went to the store.','my friend and I went to the store.','My Friend and I went to the store.'],ans:'My friend and I went to the store.',exp:'The pronoun I is ALWAYS capitalized. "friend" and "store" are common nouns · not capitalized.'},
+    {q:'What is the rule for the first word in each line of a poem?',opts:['Never capitalize it','Capitalize it only if it is a proper noun','Capitalize it only if it starts a sentence','Traditionally, it is always capitalized'],ans:'Traditionally, it is always capitalized',exp:'Poetry tradition capitalizes the first word of each line, even if it\'s mid-sentence in meaning.'},
+    {q:'Which sentence correctly uses the interjection O?',opts:['Hear us, o Zeus.','Hear us, O Zeus.','Hear Us, O zeus.','hear us, O Zeus.'],ans:'Hear us, O Zeus.',exp:'The interjection O is always capitalized. Zeus is a proper name (capitalized). The sentence begins with "Hear" (capitalized). "us" is not a proper noun.'},
+    {q:'"___ Dickensian characters are unforgettable." What fills the blank?',opts:['the','The','THE','tHe'],ans:'The',exp:'Every sentence begins with a capital. "Dickensian" is a proper adjective (from Dickens) and is already capitalized correctly.'},
+    {q:'Which properly capitalizes a proper adjective?',opts:['french bread','French bread','french Bread','French Bread'],ans:'French bread',exp:'Proper adjectives (formed from proper nouns like France → French) are capitalized. "bread" is a common noun · stays lowercase.'},
+    {q:'A friend\'s dog is named Lassie. Should Lassie be capitalized?',opts:['No, animals are not proper nouns','No, only human names are capitalized','Yes, names of animals are capitalized','Yes, only if it is a famous animal'],ans:'Yes · names of animals are capitalized',exp:'Rule 7: Capitalize the names of specific persons AND animals. Lassie is the animal\'s specific name.'},
+    {q:'Which salutation is correctly capitalized?',opts:['Dear mr. Lindeman,','dear Mr. Lindeman,','Dear Mr. Lindeman,','dear mr. Lindeman,'],ans:'Dear Mr. Lindeman,',exp:'Capitalize the FIRST word of the salutation. "Mr." is a title before a name and is always capitalized.'},
+  ],
+  part2: [
+    {q:'Which is correctly capitalized?',opts:['Department of agriculture','department of Agriculture','The Department of Agriculture','the department of Agriculture'],ans:'The Department of Agriculture',exp:'Government bodies use their full official name with all major words capitalized.'},
+    {q:'"I am from the ___." Which correctly fills the blank?',opts:['south · it\'s a direction','South · it\'s a region','south · regions aren\'t capitalized','South · all geography is capitalized'],ans:'South · it\'s a region',exp:'When referring to a geographical region (the South), capitalize it. When it\'s a direction ("drive south"), do NOT capitalize.'},
+    {q:'Which sentence correctly handles seasons?',opts:['We look forward to Spring after Winter.','We look forward to spring after winter.','We look forward to Spring after winter.','we look forward to spring after Winter.'],ans:'We look forward to spring after winter.',exp:'Seasons are NOT capitalized unless personified or part of a proper name. Here they\'re just regular references.'},
+    {q:'"Are you going to the ___ Formal?" Which correctly fills the blank?',opts:['winter','Winter','WINTER','wInter'],ans:'Winter',exp:'Here "Winter Formal" is the name of a specific event (proper name), so Winter IS capitalized.'},
+    {q:'Which is correctly written?',opts:['Starbucks Coffee','starbucks coffee','Starbucks coffee','starbucks Coffee'],ans:'Starbucks coffee',exp:'The brand name (Starbucks) is capitalized. The common noun that identifies the product type (coffee) is NOT.'},
+    {q:'Which holiday reference is correctly capitalized?',opts:['valentine\'s Day','Valentine\'s day','valentine\'s day','Valentine\'s Day'],ans:'Valentine\'s Day',exp:'Holiday names are proper nouns · all significant words capitalized. Both "Valentine\'s" and "Day" are part of the proper name.'},
+    {q:'Which building name is correctly capitalized?',opts:['the westin hotel','The Westin hotel','the Westin Hotel','The Westin Hotel'],ans:'The Westin Hotel',exp:'Names of specific buildings are capitalized · all significant words in the name.'},
+    {q:'"The ___ won the championship." Referring to the school team, what fills the blank?',opts:['mount carmel academy cubs','Mount carmel Academy Cubs','Mount Carmel Academy Cubs','Mount Carmel academy cubs'],ans:'Mount Carmel Academy Cubs',exp:'Names of institutions and their teams are proper nouns · all major words capitalized.'},
+    {q:'Which historical reference is correct?',opts:['the battle of gettysburg','The Battle Of Gettysburg','the Battle of Gettysburg','The battle of Gettysburg'],ans:'the Battle of Gettysburg',exp:'Historical events are capitalized. "of" is a preposition and stays lowercase mid-title. The article "the" at the start of the sentence is capitalized.'},
+    {q:'Which award is correctly written?',opts:['the nobel prize','the Nobel prize','the Nobel Prize','The Nobel Prize'],ans:'the Nobel Prize',exp:'Award names are proper nouns · both "Nobel" and "Prize" are capitalized. "the" before it is not part of the official name.'},
+  ],
+  part3: [
+    {q:'Which sentence is correctly capitalized?',opts:['The Roman Goddess of grain was ceres.','The Roman goddess of grain was Ceres.','The roman goddess of grain was ceres.','The Roman Goddess Of Grain was Ceres.'],ans:'The Roman goddess of grain was Ceres.',exp:'"goddess" refers to an ancient mythology deity · NOT capitalized. "Ceres" is a specific proper name · capitalized. "Roman" is a proper adjective.'},
+    {q:'Which correctly capitalizes a subject?',opts:['I have Algebra and chemistry II.','I have algebra and chemistry II.','I have Algebra and Chemistry II.','I have algebra and Chemistry ii.'],ans:'I have algebra and Chemistry II.',exp:'"algebra" without a number · common subject, not capitalized. "Chemistry II" has a number · DO capitalize it.'},
+    {q:'Which sentence about Earth is correct?',opts:['Unlike earth, Mercury has no moon.','Unlike Earth, mercury has no Moon.','Unlike Earth, Mercury has no moon.','unlike earth, mercury has no moon.'],ans:'Unlike Earth, Mercury has no moon.',exp:'"Earth" is capitalized here because it appears alongside another capitalized heavenly body (Mercury). "moon" is generally not capitalized.'},
+    {q:'Which correctly handles a language vs. subject?',opts:['I take english and algebra.','I take English and Algebra.','I take English and algebra.','I take english and Algebra.'],ans:'I take English and algebra.',exp:'"English" is a language class · always capitalized. "algebra" is a general subject with no number · not capitalized.'},
+    {q:'Which spacecraft name is correct?',opts:['apollo 11','Apollo eleven','apollo Eleven','Apollo 11'],ans:'Apollo 11',exp:'Names of specific spacecraft are proper nouns and must be capitalized.'},
+    {q:'"A number of ___ attended Junior Prom." Which fills the blank correctly?',opts:['Sophomores','sophomores','SOPHOMORES','sophomore\'s'],ans:'sophomores',exp:'"Junior Prom" is a proper event name (capitalized), but "sophomores" is a general class name · NOT capitalized here since it\'s not part of a proper noun.'},
+    {q:'Which ethnic/nationality reference is correct?',opts:['She is one-eighth cherokee and mostly Italian.','She is one-eighth Cherokee and mostly italian.','She is one-eighth Cherokee and mostly Italian.','she is one-eighth cherokee and mostly italian.'],ans:'She is one-eighth Cherokee and mostly Italian.',exp:'Names of nationalities and ethnic groups are always capitalized: Cherokee, Italian.'},
+    {q:'Which religion reference is correct?',opts:['He practices hinduism and celebrates Hanukkah.','He practices Hinduism and celebrates hanukkah.','He practices Hinduism and celebrates Hanukkah.','He practices hinduism and celebrates hanukkah.'],ans:'He practices Hinduism and celebrates Hanukkah.',exp:'Names of religions (Hinduism) and holy days (Hanukkah) are always capitalized.'},
+    {q:'Which sentence about the sun is correct?',opts:['The Sun is a star.','The sun is a Star.','The sun is a star.','the Sun is a star.'],ans:'The sun is a star.',exp:'"sun" is generally NOT capitalized. The sentence begins with "The" (capitalized). "star" is a common noun.'},
+    {q:'Which vehicle name is correctly capitalized?',opts:['kia seltos','Kia seltos','kia Seltos','Kia Seltos'],ans:'Kia Seltos',exp:'The make (Kia) AND the model (Seltos) of a vehicle are both capitalized.'},
+  ],
+  part4: [
+    {q:'"Who was the ___ during WWII?" Which fills the blank correctly?',opts:['President','president','PRESIDENT','The President'],ans:'president',exp:'A title used alone (not before a specific name) and preceded by "the" is NOT capitalized.'},
+    {q:'"Well, ___, will you please test the microphone?" Which fills the blank?',opts:['mayor','MAYOR','Mayor','the mayor'],ans:'Mayor',exp:'A title used alone in direct address IS capitalized · you\'re speaking directly to the person as if it\'s their name.'},
+    {q:'Which correctly capitalizes a family word?',opts:['My Aunt Brenda is here.','My aunt Brenda is here.','my aunt brenda is here.','My aunt brenda is here.'],ans:'My aunt Brenda is here.',exp:'"aunt" follows the possessive "My" · so it is NOT capitalized. "Brenda" is her proper name and is always capitalized.'},
+    {q:'Which correctly capitalizes a title of a book?',opts:['Gone With The Wind','Gone with the Wind','gone with the wind','Gone With the wind'],ans:'Gone with the Wind',exp:'Capitalize first and last words plus all important words. "with" and "the" are preposition/article · NOT capitalized in the middle of the title.'},
+    {q:'"Angelle called ___ Ruth last night." Which fills the blank correctly?',opts:['mawmaw','MawMaw','Mawmaw','mawMaw'],ans:'MawMaw',exp:'"MawMaw" is used in place of the person\'s name here (no possessive before it), so it IS capitalized.'},
+    {q:'Which sentence correctly handles a title after a name?',opts:['Christine Todd Washington served as Governor of New Jersey.','Christine Todd Washington served as governor of New Jersey.','Christine Todd washington served as Governor of new jersey.','Christine Todd Washington served as GOVERNOR of New Jersey.'],ans:'Christine Todd Washington served as governor of New Jersey.',exp:'A title FOLLOWING a name is not capitalized. "Washington" is a proper name (capitalized). "New Jersey" is a proper place name (capitalized).'},
+    {q:'Which title of a work is correctly capitalized?',opts:['Harry Potter And The Sorcerer\'s Stone','Harry Potter and the Sorcerer\'s Stone','harry potter and the sorcerer\'s stone','Harry Potter And The Sorcerers Stone'],ans:'Harry Potter and the Sorcerer\'s Stone',exp:'"and" and "the" mid-title are not capitalized. All other important words are. "Sorcerer\'s" is a significant word and IS capitalized.'},
+    {q:'Which is correct: "___  Powell gave the speech."',opts:['general','General','GENERAL','The general'],ans:'General',exp:'A title that comes BEFORE a person\'s name is always capitalized. "General Powell" · General is the title before the name.'},
+    {q:'Which correctly handles the article "the" in a title?',opts:['Joan reads both The Atlantic Monthly and The Rocky Mountain News.','Joan reads both The Atlantic Monthly and the Rocky Mountain News.','Joan reads both the atlantic monthly and the Rocky Mountain News.','Joan reads both the Atlantic monthly and the Rocky Mountain news.'],ans:'Joan reads both The Atlantic Monthly and the Rocky Mountain News.',exp:'"The" is part of The Atlantic Monthly\'s official title (capitalize). "the Rocky Mountain News" · "the" is NOT part of the official title (lowercase).'},
+    {q:'"Last summer, I read ___ for the fifth time." Which is correct?',opts:['harry Potter And The Sorcerer\'s Stone','Harry Potter And The Sorcerer\'s Stone','Harry Potter and the Sorcerer\'s Stone','Harry Potter and The Sorcerer\'s stone'],ans:'Harry Potter and the Sorcerer\'s Stone',exp:'In titles: capitalize first and last words and all important words. Articles, prepositions, and conjunctions in the middle stay lowercase.'},
+  ],
+};
+
+// ============================================================ SECTION QUIZ ENGINE
+const secScores = {}, secAnswered = {};
+Object.keys(allQs).forEach(k => { secScores[k]=0; secAnswered[k]=new Set(); });
+
+function buildSectionQuiz(key) {
+  const container = document.getElementById('quiz-'+key);
+  const data = allQs[key];
+  container.innerHTML = '';
+  secScores[key] = 0;
+  secAnswered[key] = new Set();
+  data.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'qq';
+    d.id = `sq-${key}-${i}`;
+    const shuffled = [...item.opts].sort(() => Math.random()-.5);
+    d.innerHTML = `
+      <div class="qq-num-text">
+        <div class="qq-num">${i+1}</div>
+        <div class="qq-text">${item.q}</div>
+      </div>
+      <div class="qq-opts">${shuffled.map(o =>
+        `<button class="qq-opt" onclick="answerSQ('${key}',${i},'${o.replace(/'/g,"\\'").replace(/"/g,'&quot;')}',this)" data-val="${o.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}">${o}</button>`
+      ).join('')}</div>
+      <div class="qq-exp" id="sqe-${key}-${i}"></div>`;
+    container.appendChild(d);
+  });
+  updateSecScore(key);
+}
+
+function answerSQ(key, qi, chosen, btn) {
+  if (secAnswered[key].has(qi)) return;
+  secAnswered[key].add(qi);
+  const item = allQs[key][qi];
+  const qDiv = document.getElementById(`sq-${key}-${qi}`);
+  const exp  = document.getElementById(`sqe-${key}-${qi}`);
+  qDiv.querySelectorAll('.qq-opt').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.val === item.ans) b.classList.add('opt-correct');
+  });
+  const ok = (chosen === item.ans);
+  if (ok) { btn.classList.add('opt-correct'); qDiv.classList.add('q-correct'); secScores[key]++; }
+  else     { btn.classList.add('opt-wrong');   qDiv.classList.add('q-wrong');
+             qDiv.querySelectorAll('.qq-opt').forEach(b => { if(b.dataset.val===item.ans) b.classList.add('opt-reveal'); }); }
+  exp.className = 'qq-exp show ' + (ok ? 'correct' : 'wrong');
+  exp.innerHTML = (ok ? '✅ ' : '❌ ') + item.exp;
+  updateSecScore(key);
+}
+
+function updateSecScore(key) {
+  const total = allQs[key].length;
+  const s = secScores[key];
+  const el = document.getElementById('score-'+key);
+  if (el) el.textContent = `🎬 ${s} / ${total}`;
+  const pop = document.getElementById('pop-'+key);
+  if (pop) pop.textContent = '🍿'.repeat(s) + '🫙'.repeat(total-s);
+}
+
+function resetQ(key) {
+  buildSectionQuiz(key);
+}
+
+// ============================================================ CHALLENGE DATA
+const POOL = [
+  // PART 1
+  {tag:'PART 1',q:'Which sentence is correctly capitalized?',opts:['the dog barked loudly.','The dog barked Loudly.','The dog barked loudly.','the Dog barked loudly.'],ans:'The dog barked loudly.',exp:'Every sentence begins with a capital. Common nouns like "dog" are not capitalized.'},
+  {tag:'PART 1',q:'Which closing is correct for a letter?',opts:['Sincerely Yours,','sincerely Yours,','Sincerely yours,','sincerely yours,'],ans:'Sincerely yours,',exp:'Capitalize only the FIRST word of a letter closing.'},
+  {tag:'PART 1',q:'Hagrid says, "___ a wizard, Harry." What goes in the blank?',opts:['"you\'re','""You\'re','""you\'re','""YOU\'RE'],ans:'\"You\'re',exp:'The first word of a quoted sentence is always capitalized.'},
+  {tag:'PART 1',q:'Which correctly uses the pronoun I?',opts:['my friend and i went to eat.','My friend and I went to eat.','My Friend and I went to eat.','my Friend and i went to eat.'],ans:'My friend and I went to eat.',exp:'The pronoun I is ALWAYS capitalized. "friend" is a common noun · not capitalized mid-sentence.'},
+  {tag:'PART 1',q:'Which properly capitalizes a proper adjective?',opts:['french bread','french Bread','French Bread','French bread'],ans:'French bread',exp:'Proper adjectives (from proper nouns) are capitalized. "bread" is a common noun · stays lowercase.'},
+  {tag:'PART 1',q:'When is the interjection "oh" capitalized?',opts:['Always','Never','Only when it starts a sentence','Only when expressing pain'],ans:'Only when it starts a sentence',exp:'"O" (the interjection) is always capitalized. But "oh" is only capitalized when it begins a sentence.'},
+  {tag:'PART 1',q:'Which salutation is correct?',opts:['dear Mr. Lindeman,','Dear mr. Lindeman,','Dear Mr. Lindeman,','dear mr. Lindeman,'],ans:'Dear Mr. Lindeman,',exp:'Capitalize the FIRST word of the salutation. Titles before names (Mr.) are always capitalized.'},
+  {tag:'PART 1',q:'A dog named Percy. Should Percy be capitalized?',opts:['No, only human names are capitalized','No, pet names are lowercase','Yes, names of animals are capitalized','Yes, only if the dog is famous'],ans:'Yes · names of animals are capitalized',exp:'Rule: Capitalize names of specific persons AND animals.'},
+  {tag:'PART 1',q:'In poetry, the first word of each line is traditionally ___.',opts:['lowercased','capitalized only if it starts a sentence','never capitalized','capitalized'],ans:'capitalized',exp:'Poetry tradition: the first word of each line gets a capital letter, regardless of sentence structure.'},
+  {tag:'PART 1',q:'"Hear us, ___ Zeus." What correctly fills the blank?',opts:['o','Oh','O','oh'],ans:'O',exp:'The interjection O (not "oh") is always capitalized.'},
+  // PART 2
+  {tag:'PART 2',q:'"I am from the ___." (Referring to a region) Which is correct?',opts:['south','SOUTH','South','sOUTH'],ans:'South',exp:'Geographical regions are capitalized. Directions (drive south) are not.'},
+  {tag:'PART 2',q:'Which season is correctly capitalized?',opts:['I love Summer.','I love summer.','i love Summer.','I love SUMMER.'],ans:'I love summer.',exp:'Seasons are NOT capitalized unless personified or part of a proper event name.'},
+  {tag:'PART 2',q:'"Are you going to the Winter ___ dance?" Which fills the blank?',opts:['formal','Formal','FORMAL','fOrMaL'],ans:'Formal',exp:'"Winter Formal" is the name of a specific event (proper noun) · both words capitalized.'},
+  {tag:'PART 2',q:'Which brand reference is correct?',opts:['starbucks Coffee','Starbucks Coffee','starbucks coffee','Starbucks coffee'],ans:'Starbucks coffee',exp:'Brand name (Starbucks) = capitalized. Common noun type identifier (coffee) = NOT capitalized.'},
+  {tag:'PART 2',q:'Which is a correctly capitalized holiday?',opts:['valentines Day','Valentine\'s day','Valentine\'s Day','valentines day'],ans:'Valentine\'s Day',exp:'Holidays are proper nouns · all significant words capitalized.'},
+  {tag:'PART 2',q:'Which government body is correct?',opts:['Department of agriculture','department of Agriculture','Department Of Agriculture','Department of Agriculture'],ans:'Department of Agriculture',exp:'Official names of government bodies capitalize all major words. "of" is a preposition · stays lowercase.'},
+  {tag:'PART 2',q:'The Battle of Gettysburg. Which word is NOT capitalized?',opts:['Battle','Gettysburg','of','The (if it starts the sentence)'],ans:'of',exp:'"of" is a preposition in the middle of the name · it stays lowercase.'},
+  {tag:'PART 2',q:'Which award name is correct?',opts:['Nobel prize','Nobel Prize','nobel Prize','nobel prize'],ans:'Nobel Prize',exp:'Award names are proper nouns · both "Nobel" and "Prize" are capitalized.'},
+  {tag:'PART 2',q:'Which historical period is correct?',opts:['the dark ages','the Dark Ages','The Dark ages','the Dark ages'],ans:'the Dark Ages',exp:'"Dark Ages" is a proper historical period name · both words capitalized. The article "the" is not part of the official name.'},
+  {tag:'PART 2',q:'"Autumn greeted us as a long-lost friend." Autumn is capitalized because ___.',opts:['seasons are always capitalized','it starts the sentence','it is being personified','it refers to a specific year'],ans:'it is being personified',exp:'Seasons are only capitalized when personified (given human qualities) or part of a proper name.'},
+  // PART 3
+  {tag:'PART 3',q:'Which subject is correctly capitalized?',opts:['I take English and Algebra.','I take english and algebra.','I take English and algebra.','I take english and Algebra.'],ans:'I take English and algebra.',exp:'"English" is a language · always capitalized. "algebra" has no number attached · stays lowercase.'},
+  {tag:'PART 3',q:'Which sentence about Earth is correct?',opts:['The earth is round.','Unlike Earth, Mars has two moons.','The Earth is the third planet from the Sun.','the earth orbits the sun.'],ans:'Unlike Earth, Mars has two moons.',exp:'"Earth" is capitalized when used alongside another capitalized heavenly body name. Alone, it\'s typically lowercase.'},
+  {tag:'PART 3',q:'Which course name is correctly capitalized?',opts:['Chemistry','chemistry II','Chemistry II','CHEMISTRY II'],ans:'Chemistry II',exp:'Course names followed by a number are capitalized. "chemistry" alone would NOT be capitalized.'},
+  {tag:'PART 3',q:'Which spacecraft is correctly written?',opts:['apollo 11','Apollo Eleven','Apollo 11','apollo Eleven'],ans:'Apollo 11',exp:'Names of specific spacecraft are proper nouns · capitalized.'},
+  {tag:'PART 3',q:'Which sentence correctly handles class names?',opts:['A number of Sophomores attended Junior Prom.','A number of sophomores attended Junior Prom.','A number of sophomores attended junior prom.','A number of Sophomores attended junior prom.'],ans:'A number of sophomores attended Junior Prom.',exp:'"sophomores" is a general class name · not capitalized. "Junior Prom" is a proper event name · capitalized.'},
+  {tag:'PART 3',q:'Which nationality is correctly capitalized?',opts:['she is Italian.','She is italian.','She is Italian.','she is italian.'],ans:'She is Italian.',exp:'Names of nationalities are always capitalized. The sentence also begins with "She."'},
+  {tag:'PART 3',q:'Which religion/holy day is correct?',opts:['He practices Hinduism and celebrates hanukkah.','He practices hinduism and celebrates Hanukkah.','He practices Hinduism and celebrates Hanukkah.','he practices hinduism and celebrates hanukkah.'],ans:'He practices Hinduism and celebrates Hanukkah.',exp:'Both religion names (Hinduism) and holy days (Hanukkah) are capitalized.'},
+  {tag:'PART 3',q:'Which sentence about the sun is correct?',opts:['The Sun is a star.','The sun is a Star.','The sun is a star.','the Sun is a star.'],ans:'The sun is a star.',exp:'"sun" is generally not capitalized. "The" at sentence start IS capitalized.'},
+  {tag:'PART 3',q:'"The Roman ___ of grain was Ceres." Which fills the blank?',opts:['Goddess','goddess','GODDESS','Godess'],ans:'goddess',exp:'"goddess" refers to an ancient mythology deity · NOT capitalized. Only specific deities of living religions are capitalized.'},
+  {tag:'PART 3',q:'Which vehicle is correctly capitalized?',opts:['kia seltos','Kia seltos','kia Seltos','Kia Seltos'],ans:'Kia Seltos',exp:'Both the make (Kia) AND the model (Seltos) of a vehicle are capitalized.'},
+  // PART 4
+  {tag:'PART 4',q:'"Who was the ___ during WWII?" Which fills the blank?',opts:['President','president','PRESIDENT','the President'],ans:'president',exp:'Titles used alone (not before a name) and preceded by "the" are NOT capitalized.'},
+  {tag:'PART 4',q:'"Well, ___, will you test the mic?" Which fills the blank?',opts:['mayor','Mayor','MAYOR','the mayor'],ans:'Mayor',exp:'Titles used alone in DIRECT ADDRESS are capitalized · as if "Mayor" is the person\'s name.'},
+  {tag:'PART 4',q:'Which correctly handles a family word?',opts:['My Aunt Brenda is here.','my aunt Brenda is here.','My aunt Brenda is here.','My Aunt brenda is here.'],ans:'My aunt Brenda is here.',exp:'"aunt" follows the possessive "My" · NOT capitalized. "Brenda" is her proper name · always capitalized.'},
+  {tag:'PART 4',q:'Which title is correctly capitalized?',opts:['Gone With The Wind','Gone with the Wind','gone with the wind','Gone With the wind'],ans:'Gone with the Wind',exp:'Articles, prepositions, and conjunctions mid-title are NOT capitalized. All other important words are.'},
+  {tag:'PART 4',q:'"Here comes ___ Randy!" Which fills the blank?',opts:['uncle','Uncle','UNCLE','an uncle'],ans:'Uncle',exp:'"Uncle" is used in place of a name here (no possessive before it) · IS capitalized.'},
+  {tag:'PART 4',q:'Which correctly handles a title after a name?',opts:['She served as Governor of New Jersey.','She served as governor of New Jersey.','She Served as governor of New jersey.','she served as Governor of New Jersey.'],ans:'She served as governor of New Jersey.',exp:'A title AFTER a name or used alone without direct address is NOT capitalized.'},
+  {tag:'PART 4',q:'Which book title is correct?',opts:['Harry Potter And The Sorcerer\'s Stone','Harry Potter and the Sorcerer\'s Stone','harry potter and the sorcerer\'s stone','Harry Potter and The Sorcerers Stone'],ans:'Harry Potter and the Sorcerer\'s Stone',exp:'"and" and "the" mid-title are lowercase. All important words are capitalized. The apostrophe-s in "Sorcerer\'s" is part of an important word.'},
+  {tag:'PART 4',q:'Which is correct: "___ Powell gave the speech."',opts:['general','General','GENERAL','The general'],ans:'General',exp:'A title BEFORE a person\'s name is always capitalized.'},
+  {tag:'PART 4',q:'Which correctly handles "the" in a title?',opts:['She reads both The Atlantic Monthly and The Rocky Mountain News.','She reads both The Atlantic Monthly and the Rocky Mountain News.','She reads both the Atlantic Monthly and the Rocky Mountain News.','She reads both the Atlantic monthly and the Rocky mountain news.'],ans:'She reads both The Atlantic Monthly and the Rocky Mountain News.',exp:'"The" is part of The Atlantic Monthly\'s official title. "the Rocky Mountain News" · "the" is NOT in the official title, so lowercase.'},
+  {tag:'PART 4',q:'"___ Bechtel is my grandmother." Which fills the blank?',opts:['grandmother','Grandmother','GRANDMOTHER','My grandmother'],ans:'Grandmother',exp:'"Grandmother" is used before/in place of the name here with no possessive · IS capitalized.'},
+];
+
+// ============================================================ CHALLENGE ENGINE
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+let chQ=[],chIdx=0,chScore=0,chStreak=0,chBest=0,chCorrect=0,chHi=0,chTimer=null,chLeft=45,chDone=false;
+const TOTAL=30,TMAX=45,BASE=100;
+
+function showLobby(){
+  document.getElementById('ch-lobby').style.display='block';
+  document.getElementById('ch-game').style.display='none';
+  document.getElementById('ch-results').style.display='none';
+  document.getElementById('hi-display').textContent=chHi;
+}
+function startChallenge(){
+  chQ=shuffle(POOL).slice(0,TOTAL);
+  chIdx=0;chScore=0;chStreak=0;chBest=0;chCorrect=0;chDone=false;
+  document.getElementById('ch-lobby').style.display='none';
+  document.getElementById('ch-results').style.display='none';
+  document.getElementById('ch-game').style.display='block';
+  loadQ();
+}
+function loadQ(){
+  if(chIdx>=chQ.length){endChallenge();return;}
+  chDone=false; clearInterval(chTimer);
+  const q=chQ[chIdx];
+  document.getElementById('ch-tag').textContent=q.tag;
+  document.getElementById('ch-qnum').textContent=chIdx+1;
+  document.getElementById('ch-qtext').innerHTML=q.q;
+  document.getElementById('ch-score').textContent=chScore;
+  document.getElementById('ch-streak').textContent=chStreak>0?chStreak+'🔥':'0';
+  const opts=shuffle(q.opts);
+  document.getElementById('ch-opts').innerHTML=opts.map(o=>
+    `<button class="ch-opt" onclick="answerCh('${o.replace(/'/g,"\\'").replace(/"/g,'&quot;')}',this)" data-val="${o.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}">${o}</button>`
+  ).join('');
+  const fb=document.getElementById('ch-fb');fb.className='ch-fb';fb.textContent='';
+  chLeft=TMAX; updateRing(chLeft,TMAX);
+  document.getElementById('ch-timer').textContent=chLeft;
+  const ring=document.getElementById('timer-ring');ring.style.stroke='#f5c800';ring.classList.remove('urgent');
+  chTimer=setInterval(()=>{
+    chLeft--;
+    document.getElementById('ch-timer').textContent=chLeft;
+    updateRing(chLeft,TMAX);
+    if(chLeft<=5){ ring.style.stroke='#ef4444'; ring.classList.add('urgent'); }
+    else if(chLeft<=10){ ring.style.stroke='#f97316'; ring.classList.remove('urgent'); }
+    else { ring.classList.remove('urgent'); }
+    if(chLeft<=0){clearInterval(chTimer);timeoutQ();}
+  },1000);
+}
+function updateRing(t,total){
+  const c=182.2, off=c*(1-t/total);
+  document.getElementById('timer-ring').style.strokeDashoffset=off;
+}
+function answerCh(chosen,btn){
+  if(chDone)return; chDone=true; clearInterval(chTimer);
+  const q=chQ[chIdx];
+  const ok=(chosen===q.ans);
+  document.querySelectorAll('.ch-opt').forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.val===q.ans) b.classList.add('ch-correct');
+  });
+  const fb=document.getElementById('ch-fb');
+  if(ok){
+    btn.classList.add('ch-correct');
+    chCorrect++;chStreak++;if(chStreak>chBest)chBest=chStreak;
+    const spd=Math.floor(chLeft*2),mul=Math.min(chStreak,6),pts=(BASE+spd)*mul;
+    chScore+=pts;
+    fb.className='ch-fb fb-ok';
+    fb.innerHTML=`✅ +${pts} pts${mul>1?` (${mul}× streak!)`:''}  ·  ${q.exp}`;
+    correctEffects(chLeft, chStreak);
+    const qw=document.getElementById('ch-qwrap');
+    qw.classList.add('lightning-glow');
+    setTimeout(()=>qw.classList.remove('lightning-glow'),600);
+  } else {
+    btn.classList.add('ch-wrong');chStreak=0;
+    fb.className='ch-fb fb-nope';
+    fb.innerHTML=`❌ Answer: <strong>${q.ans}</strong>  ·  ${q.exp}`;
+    wrongEffects();
+  }
+  document.getElementById('ch-score').textContent=chScore;
+  document.getElementById('ch-streak').textContent=chStreak>0?chStreak+'🔥':'0';
+  setTimeout(()=>{chIdx++;loadQ();},2300);
+}
+function timeoutQ(){
+  if(chDone)return; chDone=true;
+  const q=chQ[chIdx];
+  document.querySelectorAll('.ch-opt').forEach(b=>{b.disabled=true;if(b.dataset.val===q.ans)b.classList.add('ch-reveal');});
+  const fb=document.getElementById('ch-fb');
+  fb.className='ch-fb fb-time';
+  fb.innerHTML=`⏰ Time's up! Answer: <strong>${q.ans}</strong>`;
+  timeoutEffects();
+  chStreak=0;document.getElementById('ch-streak').textContent='0';
+  setTimeout(()=>{chIdx++;loadQ();},2300);
+}
+function endChallenge(){
+  clearInterval(chTimer);if(chScore>chHi)chHi=chScore;
+  document.getElementById('ch-game').style.display='none';
+  document.getElementById('ch-results').style.display='block';
+  document.getElementById('res-score').textContent=chScore;
+  document.getElementById('rs-correct').textContent=`${chCorrect}/${TOTAL}`;
+  document.getElementById('rs-streak').textContent=chBest;
+  document.getElementById('rs-hi').textContent=chHi;
+  const pct=Math.round(chCorrect/TOTAL*100);
+  let title='',msg='';
+  if(pct===100){title='PERFECT PRESS RUN!';msg='Every question correct. You know capitalization cold.';}
+  else if(pct>=80){title='FRONT PAGE WORTHY!';msg='Excellent command of all four parts. Just a few typos to clean up.';}
+  else if(pct>=60){title='GOOD DRAFT.';msg='Solid effort. Review the sections you missed, then come back for another run.';}
+  else{title='BACK TO THE EDITOR.';msg='Go back through the lesson notes, then return and beat your score. You\'ve got this.';}
+  document.getElementById('res-title').textContent=title;
+  document.getElementById('res-msg').textContent=msg;
+}
+
+// ============================================================ EFFECTS ENGINE
+const canvas = document.createElement('canvas');
+canvas.id = 'fx-canvas';
+canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:998;';
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+let particles = [], lightningBolts = [], animFrame = null;
+
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// ── PARTICLE ──────────────────────────────────────────────────────────────
+class Particle {
+  constructor(x, y, color, type) {
+    this.x = x; this.y = y; this.color = color; this.type = type;
+    this.vx = (Math.random()-0.5) * (type==='burst'?14:8);
+    this.vy = (Math.random()-1.8) * (type==='burst'?12:7);
+    this.alpha = 1;
+    this.size = type==='burst' ? Math.random()*10+4 : Math.random()*6+2;
+    this.decay = type==='burst' ? 0.022 : 0.03;
+    this.gravity = 0.38;
+    this.rotation = Math.random()*Math.PI*2;
+    this.spin = (Math.random()-0.5)*0.25;
+    this.shape = ['rect','circle','star'][Math.floor(Math.random()*3)];
+  }
+  update() {
+    this.vx *= 0.97; this.vy += this.gravity;
+    this.x += this.vx; this.y += this.vy;
+    this.alpha -= this.decay;
+    this.rotation += this.spin;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.fillStyle = this.color;
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    if (this.shape === 'circle') {
+      ctx.beginPath(); ctx.arc(0,0,this.size/2,0,Math.PI*2); ctx.fill();
+    } else if (this.shape === 'star') {
+      ctx.beginPath();
+      for(let i=0;i<5;i++){
+        ctx.lineTo(Math.cos((i*4*Math.PI)/5)*this.size, Math.sin((i*4*Math.PI)/5)*this.size);
+        ctx.lineTo(Math.cos((i*4*Math.PI/5+Math.PI/5))*this.size/2, Math.sin((i*4*Math.PI/5+Math.PI/5))*this.size/2);
+      }
+      ctx.closePath(); ctx.fill();
+    } else {
+      ctx.fillRect(-this.size/2,-this.size/2,this.size,this.size);
+    }
+    ctx.restore();
+  }
+}
+
+// ── LIGHTNING BOLT ────────────────────────────────────────────────────────
+class LightningBolt {
+  constructor(speedBonus) {
+    // more bolts for faster answers
+    this.intensity = speedBonus; // 0-90
+    this.alpha = 1;
+    this.decay = 0.04 + Math.random()*0.03;
+    this.points = this.generate();
+    this.color = speedBonus > 60 ? '#ffffff' : speedBonus > 30 ? '#fde68a' : '#f5c800';
+    this.width = speedBonus > 60 ? 3 : 2;
+  }
+  generate() {
+    const w = canvas.width, h = canvas.height;
+    const pts = [];
+    // start from top somewhere random
+    let x = Math.random() * w * 0.8 + w * 0.1;
+    let y = 0;
+    pts.push({x, y});
+    const steps = 8 + Math.floor(Math.random()*6);
+    for (let i = 0; i < steps; i++) {
+      x += (Math.random()-0.5) * 120;
+      x = Math.max(20, Math.min(w-20, x));
+      y += (h / steps) * (0.7 + Math.random()*0.6);
+      pts.push({x, y});
+    }
+    return pts;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = this.width;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = this.color;
+    ctx.beginPath();
+    ctx.moveTo(this.points[0].x, this.points[0].y);
+    for (let i = 1; i < this.points.length; i++) {
+      ctx.lineTo(this.points[i].x, this.points[i].y);
+    }
+    ctx.stroke();
+    // inner bright core
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha *= 0.6;
+    ctx.stroke();
+    ctx.restore();
+  }
+  update() { this.alpha -= this.decay; }
+}
+
+// ── ANIMATION LOOP ────────────────────────────────────────────────────────
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles = particles.filter(p => p.alpha > 0);
+  lightningBolts = lightningBolts.filter(b => b.alpha > 0);
+  particles.forEach(p => { p.update(); p.draw(ctx); });
+  lightningBolts.forEach(b => { b.update(); b.draw(ctx); });
+  if (particles.length > 0 || lightningBolts.length > 0) {
+    animFrame = requestAnimationFrame(animate);
+  } else {
+    animFrame = null;
+  }
+}
+function startAnim() {
+  if (!animFrame) animFrame = requestAnimationFrame(animate);
+}
+
+// ── SHAKE ─────────────────────────────────────────────────────────────────
+function shakeScreen(intensity) {
+  const el = document.querySelector('.ch-qwrap') || document.body;
+  let t = 0, total = 500;
+  const interval = setInterval(() => {
+    t += 16;
+    const mag = intensity * (1 - t/total);
+    const dx = (Math.random()-0.5)*mag*2, dy = (Math.random()-0.5)*mag*2;
+    el.style.transform = `translate(${dx}px,${dy}px)`;
+    if (t >= total) { clearInterval(interval); el.style.transform = ''; }
+  }, 16);
+}
+
+// ── SCREEN FLASH ──────────────────────────────────────────────────────────
+function screenFlash(color, duration) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed;inset:0;background:${color};opacity:0.35;pointer-events:none;z-index:997;transition:opacity ${duration}ms ease;`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => {
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), duration);
+  });
+}
+
+// ── SPAWN PARTICLES ───────────────────────────────────────────────────────
+function spawnParticles(x, y, count, colors, type) {
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle(x, y, colors[Math.floor(Math.random()*colors.length)], type));
+  }
+  startAnim();
+}
+
+// ── SPAWN LIGHTNING ───────────────────────────────────────────────────────
+function spawnLightning(count, speedBonus) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      lightningBolts.push(new LightningBolt(speedBonus));
+      startAnim();
+    }, i * 80);
+  }
+}
+
+// ── FLASH BANNER ─────────────────────────────────────────────────────────
+function flash(text) {
+  const el = document.getElementById('bonus-flash');
+  el.textContent = text; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 950);
+}
+
+// ── CORRECT ANSWER EFFECTS ────────────────────────────────────────────────
+function correctEffects(timeLeft, streak) {
+  const speedBonus = Math.floor(timeLeft * 2); // 0-90
+  const btn = document.querySelector('.ch-opt.ch-correct');
+  const rect = btn ? btn.getBoundingClientRect() : {left:window.innerWidth/2, top:window.innerHeight/2, width:0, height:0};
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+
+  // Speed tiers
+  if (speedBonus >= 70) {
+    // BLAZING FAST · full lightning storm
+    spawnLightning(5, speedBonus);
+    screenFlash('#f5c800', 300);
+    spawnParticles(cx, cy, 40, ['#f5c800','#ffffff','#fde68a','#ffec00'], 'burst');
+    shakeScreen(6);
+    flash('⚡ BLAZING FAST!');
+  } else if (speedBonus >= 50) {
+    // VERY FAST · multiple bolts
+    spawnLightning(3, speedBonus);
+    screenFlash('#f5c800', 200);
+    spawnParticles(cx, cy, 25, ['#f5c800','#ffffff','#fde68a'], 'burst');
+    flash('⚡ QUICK!');
+  } else if (speedBonus >= 30) {
+    // FAST · one or two bolts
+    spawnLightning(2, speedBonus);
+    spawnParticles(cx, cy, 15, ['#f5c800','#fde68a'], 'normal');
+  } else if (speedBonus >= 10) {
+    // MODERATE · single bolt
+    spawnLightning(1, speedBonus);
+    spawnParticles(cx, cy, 8, ['#f5c800'], 'normal');
+  } else {
+    // SLOW · just particles
+    spawnParticles(cx, cy, 5, ['#fde68a'], 'normal');
+  }
+
+  // STREAK bonuses stack on top
+  if (streak >= 6) {
+    spawnLightning(4, 90);
+    screenFlash('#ff9f40', 250);
+    shakeScreen(8);
+    flash(`${streak}× UNSTOPPABLE!! ⚡⚡⚡`);
+  } else if (streak >= 4) {
+    spawnLightning(2, 70);
+    flash(`${streak}× ON FIRE! 🔥⚡`);
+  } else if (streak >= 2) {
+    flash(`${streak}× STREAK! 🔥`);
+  }
+}
+
+// ── WRONG ANSWER EFFECTS ─────────────────────────────────────────────────
+function wrongEffects() {
+  shakeScreen(10);
+  screenFlash('#ef4444', 350);
+  spawnParticles(window.innerWidth/2, window.innerHeight/2, 12, ['#ef4444','#ff6b6b','#ffffff'], 'normal');
+}
+
+// ── TIMEOUT EFFECTS ───────────────────────────────────────────────────────
+function timeoutEffects() {
+  shakeScreen(7);
+  screenFlash('#856404', 400);
+}
+
+// ── UPDATE answerCh + timeoutQ to use new effects ─────────────────────────
+const _origAnswerCh = window.answerCh; // patch below inline
+</script>
+</body>
+</html>
