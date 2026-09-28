@@ -689,7 +689,19 @@ body {
     </div>
   </div>
 
-  <div class="rule-card" data-num="2">
+  <div class="rule-card ink-card" data-num="2">
+    <div class="rule-title">First Word of a Line of Poetry</div>
+    <div class="rule-body">Traditionally, the first word in each line of a poem is capitalized.</div>
+    <div class="ex-block">
+      <div class="ex-label">MAYA ANGELOU</div>
+      <p><span class="hi-cap">S</span>torm, blow me from here<br>
+      <span class="hi-cap">W</span>ith your fiercest wind<br>
+      <span class="hi-cap">L</span>et me float across the sky<br>
+      <span class="hi-cap">'T</span>il I can rest again.</p>
+    </div>
+  </div>
+
+  <div class="rule-card" data-num="3">
     <div class="rule-title">First Word of a Quoted Sentence</div>
     <div class="rule-body">The first word of a quoted sentence begins with a capital letter, <strong>whether or not the quotation begins the sentence.</strong></div>
     <div class="ex-block">
@@ -705,18 +717,6 @@ body {
       <div class="ex-label">DIALOGUE FRAGMENT</div>
       <p>When asked about Harry Potter, Jacob replied, <strong>"<span class="hi-cap">O</span>nly one book."</strong><br>
       <em>Fragments used in dialogue also get a capital first letter.</em></p>
-    </div>
-  </div>
-
-  <div class="rule-card ink-card" data-num="3">
-    <div class="rule-title">First Word of a Line of Poetry</div>
-    <div class="rule-body">Traditionally, the first word in each line of a poem is capitalized.</div>
-    <div class="ex-block">
-      <div class="ex-label">MAYA ANGELOU</div>
-      <p><span class="hi-cap">S</span>torm, blow me from here<br>
-      <span class="hi-cap">W</span>ith your fiercest wind<br>
-      <span class="hi-cap">L</span>et me float across the sky<br>
-      <span class="hi-cap">'T</span>il I can rest again.</p>
     </div>
   </div>
 
@@ -1133,13 +1133,13 @@ const allQs = {
   part1: [
     {q:'Which sentence is correctly capitalized?',opts:['the river flows south.','The river flows South.','The river flows south.','the River flows south.'],ans:'The river flows south.',exp:'Every sentence begins with a capital letter. "south" here is a direction, not a region name, so it stays lowercase.'},
     {q:'In a letter, which closing is correct?',opts:['sincerely Yours,','Sincerely yours,','Sincerely Yours,','sincerely yours,'],ans:'Sincerely yours,',exp:'Only capitalize the FIRST word of a letter closing. "yours" follows, so it stays lowercase.'},
-    {q:'Hagrid says, "___ a wizard, Harry." Which word fills the blank?',opts:['"you\'re','""You\'re','""you\'re','""You\'Re'],ans:'\"You\'re',exp:'The first word of a quoted sentence is always capitalized, even mid-sentence after "says,"'},
+    {q:'Hagrid says, \"___ a wizard, Harry.\" Which word fills the blank?',opts:['you\'re','You\'re','YOU\'RE','You\'RE'],ans:'You\'re',exp:'The first word of a quoted sentence is always capitalized, even mid-sentence after \"says,\"'},
     {q:'Which sentence uses the pronoun I correctly?',opts:['My friend and i went to the store.','My friend and I went to the store.','my friend and I went to the store.','My Friend and I went to the store.'],ans:'My friend and I went to the store.',exp:'The pronoun I is ALWAYS capitalized. "friend" and "store" are common nouns · not capitalized.'},
     {q:'What is the rule for the first word in each line of a poem?',opts:['Never capitalize it','Capitalize it only if it is a proper noun','Capitalize it only if it starts a sentence','Traditionally, it is always capitalized'],ans:'Traditionally, it is always capitalized',exp:'Poetry tradition capitalizes the first word of each line, even if it\'s mid-sentence in meaning.'},
     {q:'Which sentence correctly uses the interjection O?',opts:['Hear us, o Zeus.','Hear us, O Zeus.','Hear Us, O zeus.','hear us, O Zeus.'],ans:'Hear us, O Zeus.',exp:'The interjection O is always capitalized. Zeus is a proper name (capitalized). The sentence begins with "Hear" (capitalized). "us" is not a proper noun.'},
     {q:'"___ Dickensian characters are unforgettable." What fills the blank?',opts:['the','The','THE','tHe'],ans:'The',exp:'Every sentence begins with a capital. "Dickensian" is a proper adjective (from Dickens) and is already capitalized correctly.'},
     {q:'Which properly capitalizes a proper adjective?',opts:['french bread','French bread','french Bread','French Bread'],ans:'French bread',exp:'Proper adjectives (formed from proper nouns like France → French) are capitalized. "bread" is a common noun · stays lowercase.'},
-    {q:'A friend\'s dog is named Lassie. Should Lassie be capitalized?',opts:['No, animals are not proper nouns','No, only human names are capitalized','Yes, names of animals are capitalized','Yes, only if it is a famous animal'],ans:'Yes · names of animals are capitalized',exp:'Rule 7: Capitalize the names of specific persons AND animals. Lassie is the animal\'s specific name.'},
+    {q:'A friend\'s dog is named Lassie. Should Lassie be capitalized?',opts:['No, animals are not proper nouns','No, only human names are capitalized','Yes, names of animals are capitalized','Yes, only if it is a famous animal'],ans:'Yes, names of animals are capitalized',exp:'Rule 7: Capitalize the names of specific persons AND animals. Lassie is the animal\'s specific name.'},
     {q:'Which salutation is correctly capitalized?',opts:['Dear mr. Lindeman,','dear Mr. Lindeman,','Dear Mr. Lindeman,','dear mr. Lindeman,'],ans:'Dear Mr. Lindeman,',exp:'Capitalize the FIRST word of the salutation. "Mr." is a title before a name and is always capitalized.'},
   ],
   part2: [
@@ -1246,12 +1246,12 @@ const POOL = [
   // PART 1
   {tag:'PART 1',q:'Which sentence is correctly capitalized?',opts:['the dog barked loudly.','The dog barked Loudly.','The dog barked loudly.','the Dog barked loudly.'],ans:'The dog barked loudly.',exp:'Every sentence begins with a capital. Common nouns like "dog" are not capitalized.'},
   {tag:'PART 1',q:'Which closing is correct for a letter?',opts:['Sincerely Yours,','sincerely Yours,','Sincerely yours,','sincerely yours,'],ans:'Sincerely yours,',exp:'Capitalize only the FIRST word of a letter closing.'},
-  {tag:'PART 1',q:'Hagrid says, "___ a wizard, Harry." What goes in the blank?',opts:['"you\'re','""You\'re','""you\'re','""YOU\'RE'],ans:'\"You\'re',exp:'The first word of a quoted sentence is always capitalized.'},
+  {tag:'PART 1',q:'Hagrid says, "___ a wizard, Harry." What goes in the blank?',opts:['you\'re','You\'re','YOU\'RE','you\'Re'],ans:'You\'re',exp:'The first word of a quoted sentence is always capitalized.'},
   {tag:'PART 1',q:'Which correctly uses the pronoun I?',opts:['my friend and i went to eat.','My friend and I went to eat.','My Friend and I went to eat.','my Friend and i went to eat.'],ans:'My friend and I went to eat.',exp:'The pronoun I is ALWAYS capitalized. "friend" is a common noun · not capitalized mid-sentence.'},
   {tag:'PART 1',q:'Which properly capitalizes a proper adjective?',opts:['french bread','french Bread','French Bread','French bread'],ans:'French bread',exp:'Proper adjectives (from proper nouns) are capitalized. "bread" is a common noun · stays lowercase.'},
   {tag:'PART 1',q:'When is the interjection "oh" capitalized?',opts:['Always','Never','Only when it starts a sentence','Only when expressing pain'],ans:'Only when it starts a sentence',exp:'"O" (the interjection) is always capitalized. But "oh" is only capitalized when it begins a sentence.'},
   {tag:'PART 1',q:'Which salutation is correct?',opts:['dear Mr. Lindeman,','Dear mr. Lindeman,','Dear Mr. Lindeman,','dear mr. Lindeman,'],ans:'Dear Mr. Lindeman,',exp:'Capitalize the FIRST word of the salutation. Titles before names (Mr.) are always capitalized.'},
-  {tag:'PART 1',q:'A dog named Percy. Should Percy be capitalized?',opts:['No, only human names are capitalized','No, pet names are lowercase','Yes, names of animals are capitalized','Yes, only if the dog is famous'],ans:'Yes · names of animals are capitalized',exp:'Rule: Capitalize names of specific persons AND animals.'},
+  {tag:'PART 1',q:'A dog named Percy. Should Percy be capitalized?',opts:['No, only human names are capitalized','No, pet names are lowercase','Yes, names of animals are capitalized','Yes, only if the dog is famous'],ans:'Yes, names of animals are capitalized',exp:'Rule: Capitalize names of specific persons AND animals.'},
   {tag:'PART 1',q:'In poetry, the first word of each line is traditionally ___.',opts:['lowercased','capitalized only if it starts a sentence','never capitalized','capitalized'],ans:'capitalized',exp:'Poetry tradition: the first word of each line gets a capital letter, regardless of sentence structure.'},
   {tag:'PART 1',q:'"Hear us, ___ Zeus." What correctly fills the blank?',opts:['o','Oh','O','oh'],ans:'O',exp:'The interjection O (not "oh") is always capitalized.'},
   // PART 2
